@@ -1,0 +1,50 @@
+[
+  {
+    "id": "smartphones",
+    "name": "Smartphones",
+    "nameBn": "স্মার্টফোন",
+    "description": "Premier flagship smartphones from Apple, Samsung, Google, Xiaomi, OnePlus, Oppo, Vivo, Realme, and Sony.",
+    "icon": "Smartphone",
+    "itemCount": 24
+  },
+  {
+    "id": "earbuds",
+    "name": "Earbuds",
+    "nameBn": "ইয়ারবাডস",
+    "description": "True wireless active noise cancelling earbuds and audiophile spatial acoustic in-ears.",
+    "icon": "Headphones",
+    "itemCount": 12
+  },
+  {
+    "id": "audio",
+    "name": "Audio",
+    "nameBn": "অডিও ও হেডফোন",
+    "description": "High-fidelity spatial audio, over-ear ANC studio headphones, and lossless monitoring.",
+    "icon": "Headphones",
+    "itemCount": 3
+  },
+  {
+    "id": "chargers-power",
+    "name": "Chargers & Power",
+    "nameBn": "চার্জার ও পাওয়ার ব্যাংক",
+    "description": "Ultra-fast GaN power adapters, Qi2 wireless charging stations, and high-capacity portable power banks.",
+    "icon": "Zap",
+    "itemCount": 22
+  },
+  {
+    "id": "smartwatches",
+    "name": "Smartwatches",
+    "nameBn": "স্মার্টওয়াচ",
+    "description": "Titanium endurance smartwatches, biometric health sensors, and precision sports chronographs.",
+    "icon": "Watch",
+    "itemCount": 12
+  },
+  {
+    "id": "tablets-laptops",
+    "name": "Tablets & Laptops",
+    "nameBn": "ট্যাবলেট ও ল্যাপটপ",
+    "description": "M3 Max / M4 silicon creative tablets, high-resolution AMOLED displays, and pro mobile workstations.",
+    "icon": "Laptop",
+    "itemCount": 9
+  }
+]

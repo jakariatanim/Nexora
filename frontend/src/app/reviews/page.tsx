@@ -2,6 +2,7 @@ import React from 'react';
 import { fetchReviews } from '../../lib/api';
 import { ReviewsClient } from './ReviewsClient';
 
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {

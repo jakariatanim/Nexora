@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { fetchFounder } from '../../lib/api';
 import { EmailIcon, LinkedInIcon, WhatsAppIcon, FacebookIcon } from '../../components/BrandIcons';
 
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export default async function FounderPage() {

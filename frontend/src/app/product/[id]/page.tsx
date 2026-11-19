@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { fetchProductById } from '../../../lib/api';
 import { ProductDetailClient } from './ProductDetailClient';
 
+export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {

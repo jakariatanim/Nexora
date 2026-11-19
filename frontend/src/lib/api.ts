@@ -1,4 +1,8 @@
 import { Product, Order, Review, Founder, AdminMember, User, Coupon, Claim, Category } from './types';
+import defaultProducts from '../data/products.json';
+import defaultCategories from '../data/categories.json';
+import defaultReviews from '../data/reviews.json';
+import defaultFounder from '../data/founder.json';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
@@ -15,10 +19,10 @@ export async function fetchProducts(): Promise<Product[]> {
   try {
     const res = await fetch(`${API_BASE}/products`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch products');
-    return await res.json();
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data : (defaultProducts as unknown as Product[]);
   } catch (err) {
-    console.warn('API fetchProducts fallback:', err);
-    return [];
+    return defaultProducts as unknown as Product[];
   }
 }
 
@@ -143,10 +147,10 @@ export async function fetchReviews(): Promise<Review[]> {
   try {
     const res = await fetch(`${API_BASE}/reviews`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch reviews');
-    return await res.json();
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data : (defaultReviews as unknown as Review[]);
   } catch (err) {
-    console.warn('API fetchReviews fallback:', err);
-    return [];
+    return defaultReviews as unknown as Review[];
   }
 }
 
@@ -187,8 +191,7 @@ export async function fetchFounder(): Promise<Founder | null> {
     if (!res.ok) throw new Error('Failed to fetch founder');
     return await res.json();
   } catch (err) {
-    console.warn('API fetchFounder fallback:', err);
-    return null;
+    return defaultFounder as unknown as Founder;
   }
 }
 
@@ -455,11 +458,11 @@ export async function deleteCoupon(id: string): Promise<boolean> {
 export async function fetchCategories(): Promise<Category[]> {
   try {
     const res = await fetch(`${API_BASE}/categories`, { cache: 'no-store' });
-    if (!res.ok) return [];
-    return await res.json();
+    if (!res.ok) return defaultCategories as unknown as Category[];
+    const data = await res.json();
+    return Array.isArray(data) && data.length > 0 ? data : (defaultCategories as unknown as Category[]);
   } catch (err) {
-    console.error('Error fetching categories:', err);
-    return [];
+    return defaultCategories as unknown as Category[];
   }
 }
 
