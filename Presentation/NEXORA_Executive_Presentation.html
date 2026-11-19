@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NEXORA Platform Ecosystem Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+  
+  @page {
+    size: 1920px 1080px;
+    margin: 0;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #070B18;
+    color: #FFFFFF;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    page-break-after: always;
+    position: relative;
+    padding: 70px 90px;
+    background: radial-gradient(circle at 85% 15%, rgba(0, 113, 227, 0.15) 0%, rgba(7, 11, 24, 1) 70%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+  
+  .header-tag {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #38BDF8;
+    margin-bottom: 8px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .header-title {
+    font-size: 42px;
+    font-weight: 800;
+    color: #FFFFFF;
+    letter-spacing: -0.5px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .header-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(56, 189, 248, 0.4) 0%, rgba(255, 255, 255, 0.1) 60%, transparent 100%);
+    margin-bottom: 35px;
+  }
+  
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 14px;
+    color: #94A3B8;
+  }
+  
+  .footer-brand {
+    font-weight: 700;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .footer-url {
+    font-family: 'JetBrains Mono', monospace;
+    color: #38BDF8;
+    font-weight: 600;
+  }
+  
+  /* Grid Layouts */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    flex: 1;
+  }
+  
+  .grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    flex: 1;
+  }
+  
+  .grid-2x5 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 16px;
+    flex: 1;
+  }
+  
+  /* Cards */
+  .card {
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 30px;
+    position: relative;
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card.accent-blue {
+    border-color: rgba(0, 113, 227, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 113, 227, 0.12);
+  }
+  
+  .card.accent-emerald {
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 8px 32px rgba(16, 185, 129, 0.12);
+  }
+  
+  .card.accent-amber {
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 8px 32px rgba(245, 158, 11, 0.12);
+  }
+  
+  .card.accent-purple {
+    border-color: rgba(168, 85, 247, 0.5);
+    box-shadow: 0 8px 32px rgba(168, 85, 247, 0.12);
+  }
+  
+  .card-icon {
+    font-size: 32px;
+    margin-bottom: 14px;
+    display: inline-block;
+  }
+  
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .card-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #CBD5E1;
+  }
+  
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  
+  .badge-blue { background: rgba(0, 113, 227, 0.2); color: #38BDF8; border: 1px solid rgba(0, 113, 227, 0.4); }
+  .badge-emerald { background: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); }
+  .badge-amber { background: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); }
+  
+  .feature-list {
+    list-style: none;
+    margin-top: 14px;
+  }
+  
+  .feature-list li {
+    font-size: 14px;
+    line-height: 1.65;
+    color: #E2E8F0;
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+  }
+  
+  .feature-list li::before {
+    content: "▹";
+    position: absolute;
+    left: 0;
+    color: #38BDF8;
+    font-weight: bold;
+  }
+  
+  /* Compact Pill Card for Visitor Suite */
+  .pill-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  
+  .pill-icon {
+    font-size: 26px;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .pill-content h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 3px;
+  }
+  
+  .pill-content p {
+    font-size: 12px;
+    color: #94A3B8;
+    line-height: 1.4;
+  }
+  
+  /* Hero Cover Slide */
+  .cover-slide {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at 50% 40%, rgba(0, 113, 227, 0.25) 0%, rgba(7, 11, 24, 1) 75%);
+  }
+  
+  .cover-box {
+    max-width: 1100px;
+    padding: 60px 80px;
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-radius: 32px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  }
+  
+  .cover-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 20px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    margin-bottom: 25px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: #38BDF8;
+  }
+  
+  .cover-title {
+    font-size: 58px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.15;
+    margin-bottom: 18px;
+  }
+  
+  .cover-subtitle {
+    font-size: 22px;
+    color: #94A3B8;
+    margin-bottom: 35px;
+    line-height: 1.5;
+  }
+  
+  .cover-meta {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    padding-top: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  
+  .meta-item {
+    text-align: left;
+  }
+  
+  .meta-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #64748B;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  .meta-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: COVER -->
+<div class="slide cover-slide">
+  <div class="cover-box">
+    <div class="cover-logo">
+      <span>∞</span> NEXORA ENTERPRISE PLATFORM
+    </div>
+    <h1 class="cover-title">Full Platform Ecosystem Architecture &amp; System Capabilities</h1>
+    <p class="cover-subtitle">Complete Technical Blueprint: Technology Stack, Enterprise Security, Customer Experience Suite, Back-Office Governance, &amp; Founder ROI</p>
+    
+    <div class="cover-meta">
+      <div class="meta-item">
+        <div class="meta-label">DIRECTED BY / FOUNDER</div>
+        <div class="meta-value" style="color: #38BDF8;">Jakaria Tanim</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">LIVE GLOBAL PRODUCTION</div>
+        <div class="meta-value">nexorabd.pages.dev</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">SYSTEM VERSION</div>
+        <div class="meta-value" style="color: #34D399;">Version 2.0 (Edge Optimized)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">CORE INFRASTRUCTURE</div>
+        <div class="meta-value">Next.js 14 + Node.js + Cloudflare Edge</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 2: FULL-STACK TECH STACK -->
+<div class="slide">
+  <div>
+    <div class="header-tag">SYSTEM SPECIFICATION 01</div>
+    <div class="header-title">Full-Stack Technology Stack &amp; Edge Infrastructure</div>
+    <div class="header-divider"></div>
+  </div>
+  
+  <div class="grid-3">
+    <!-- Frontend -->
+    <div class="card accent-blue">
+      <span class="badge badge-blue">Client Tier</span>
+      <div class="card-icon">💻</div>
+      <h3 class="card-title">Frontend Architecture</h3>
+      <p class="card-desc">Modern React Server &amp; Client components optimized for lightning-fast edge delivery.</p>
+      <ul class="feature-list">
+        <li><strong>Next.js 14 (App Router):</strong> Dynamic &amp; static route segment optimization with React Server Components.</li>
+        <li><strong>Edge Runtime:</strong> Microsecond cold starts on Cloudflare global CDN edge nodes.</li>
+        <li><strong>TypeScript &amp; React 18:</strong> 100% strict type safety and unified state flow.</li>
+        <li><strong>Tailwind CSS:</strong> Adaptive Cyber Dark &amp; Pristine Light luxury color palettes.</li>
+        <li><strong>Framer Motion:</strong> Kinetic animations, spring physics, and card micro-interactions.</li>
+        <li><strong>Lucide React:</strong> Pixel-perfect iconography across navigation and analytics.</li>
+        <li><strong>Progressive Web App (PWA):</strong> Service Worker &amp; manifest for native mobile and PC install.</li>
+      </ul>
+    </div>
+    
+    <!-- Backend -->
+    <div class="card accent-emerald">
+      <span class="badge badge-emerald">Service Tier</span>
+      <div class="card-icon">⚡</div>
+      <h3 class="card-title">Backend &amp; API Core</h3>
+      <p class="card-desc">High-throughput asynchronous REST services with instant telemetry and data sync.</p>
+      <ul class="feature-list">
+        <li><strong>Node.js &amp; Express Engine:</strong> Fast, unblocked asynchronous request processing.</li>
+        <li><strong>JSON Persistence Core:</strong> Structured flat-file database storage in <code>backend/data/</code>.</li>
+        <li><strong>Dual-Tier Hybrid Telemetry:</strong> Automatic fallback to edge dataset when running on serverless CDN.</li>
+        <li><strong>Master Key Authentication:</strong> Cryptographic token signing and role authorization.</li>
+        <li><strong>Automated Order State Machine:</strong> 5-stage fulfillment lifecycle state transitions.</li>
+        <li><strong>RMA Claims Engine:</strong> Structured warranty and replacement ticket processing.</li>
+        <li><strong>Multi-Channel Staff Invite Generator:</strong> Direct tokenized URL generator for staff onboarding.</li>
+      </ul>
+    </div>
+    
+    <!-- Cloud / DevOps -->
+    <div class="card accent-amber">
+      <span class="badge badge-amber">Infrastructure Tier</span>
+      <div class="card-icon">☁️</div>
+      <h3 class="card-title">Cloud, Edge &amp; DevOps</h3>
+      <p class="card-desc">Serverless global distribution with zero hardware maintenance and 99.99% SLA.</p>
+      <ul class="feature-list">
+        <li><strong>Cloudflare Pages:</strong> Distributed worldwide edge network serving assets within 15ms in Bangladesh.</li>
+        <li><strong>Automated GitHub CI/CD:</strong> Instant production build and deployment upon <code>git push origin main</code>.</li>
+        <li><strong>Clean Canonical Domain:</strong> <code>nexorabd.pages.dev</code> with SSL TLS 1.3 encryption.</li>
+        <li><strong>Cloudflare DDoS Shield:</strong> Enterprise Layer 7 mitigation &amp; automated bot defense.</li>
+        <li><strong>Smart Image Optimization:</strong> High-definition gadget visuals delivered through edge CDN.</li>
+        <li><strong>100% Mobile Responsive:</strong> Fluid viewports engineered for smartphones, tablets, and 4K displays.</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-brand"><span>∞</span> NEXORA Platform Architecture</div>
+    <div>Directed by Jakaria Tanim</div>
+    <div class="footer-url">nexorabd.pages.dev</div>
+  </div>
+</div>
+
+<!-- SLIDE 3: SECURITY ARCHITECTURE -->
+<div class="slide">
+  <div>
+    <div class="header-tag">SYSTEM SPECIFICATION 02</div>
+    <div class="header-title">Enterprise Cybersecurity Architecture &amp; Data Protection</div>
+    <div class="header-divider"></div>
+  </div>
+  
+  <div class="grid-2">
+    <div class="card accent-blue">
+      <div class="card-icon">🔐</div>
+      <h3 class="card-title">Master Admin Key &amp; Immutable Identity</h3>
+      <p class="card-desc">The Super Administrator role (Jakaria Tanim) is locked to a verified cryptographic Master Key. No unauthorized user, moderator, or API request can elevate permissions without Master Key signing.</p>
+    </div>
+    
+    <div class="card accent-emerald">
+      <div class="card-icon">🛡️</div>
+      <h3 class="card-title">Mandatory Current Password Verification</h3>
+      <p class="card-desc">Credential updates require explicit current password validation before modification. This eliminates unauthorized session takeovers if an administrator device is left unlocked.</p>
+    </div>
+    
+    <div class="card accent-amber">
+      <div class="card-icon">⚡</div>
+      <h3 class="card-title">Serverless V8 Edge Sandboxing</h3>
+      <p class="card-desc">Next.js Edge Runtime executes within isolated V8 micro-containers. There is zero Linux server operating system exposed, completely eliminating traditional server compromise and shell exploits.</p>
+    </div>
+    
+    <div class="card accent-purple">
+      <div class="card-icon">👥</div>
+      <h3 class="card-title">Role-Based Access Control (RBAC)</h3>
+      <p class="card-desc">Strict compartmentalization separating Super Admin, Administrator, Inventory Moderator, and Order Supervisor. Each role is restricted to its required functional domain.</p>
+    </div>
+    
+    <div class="card accent-blue">
+      <div class="card-icon">🌐</div>
+      <h3 class="card-title">Cloudflare SSL TLS 1.3 &amp; DDoS Shielding</h3>
+      <p class="card-desc">All customer traffic is protected with end-to-end TLS 1.3 encryption, automatic HTTP/3 prioritization, DNSSEC validation, and global DDoS mitigation against flood attacks.</p>
+    </div>
+    
+    <div class="card accent-emerald">
+      <div class="card-icon">🚫</div>
+      <h3 class="card-title">Client-Side Session Integrity &amp; Anti-Tampering</h3>
+      <p class="card-desc">Encrypted credential hashing and state validation protect user carts, orders, and administrative states from client-side URL tampering and local storage spoofing.</p>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-brand"><span>∞</span> NEXORA Platform Architecture</div>
+    <div>Directed by Jakaria Tanim</div>
+    <div class="footer-url">nexorabd.pages.dev</div>
+  </div>
+</div>
+
+<!-- SLIDE 4: CUSTOMER & VISITOR SUITE -->
+<div class="slide">
+  <div>
+    <div class="header-tag">SYSTEM SPECIFICATION 03</div>
+    <div class="header-title">Customer &amp; Visitor Experience Suite (10 Elite Features)</div>
+    <div class="header-divider"></div>
+  </div>
+  
+  <div class="grid-2x5">
+    <div class="pill-card">
+      <div class="pill-icon">🏷️</div>
+      <div class="pill-content">
+        <h4>10 Global Flagship Brands</h4>
+        <p>Curated official hardware from Apple, Samsung, Google, Sony, OnePlus, Xiaomi, Nothing, Huawei, Asus, &amp; Anker.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">🔍</div>
+      <div class="pill-content">
+        <h4>Predictive Search &amp; Taxonomy</h4>
+        <p>Real-time keyword search and instant category chips (Smartphones, Audio, Earbuds, Chargers, Smartwatches).</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">⚖️</div>
+      <div class="pill-content">
+        <h4>Side-by-Side Flagship Compare</h4>
+        <p>Interactive comparison matrix comparing technical specs, cameras, battery, and pricing side-by-side.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">🛍️</div>
+      <div class="pill-content">
+        <h4>Slide-Over Bag &amp; Promo Coupons</h4>
+        <p>Dynamic slide-over shopping bag with live item counter, subtotal, and instant discount coupon code validator.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">📦</div>
+      <div class="pill-content">
+        <h4>5-Stage Live Order Tracking</h4>
+        <p>Interactive tracking portal (Pending → Processing → Shipped → Out for Delivery → Delivered) with unique order IDs.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">💳</div>
+      <div class="pill-content">
+        <h4>Smart Financial EMI Calculator</h4>
+        <p>Integrated installment planning widget calculating monthly EMI payments across 3, 6, 12, and 24-month tenures.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">🔄</div>
+      <div class="pill-content">
+        <h4>7-Day RMA Replacement Claim</h4>
+        <p>Self-service warranty claim portal allowing buyers to file replacement requests with instant invoice verification.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">⭐</div>
+      <div class="pill-content">
+        <h4>Customer Verified Reviews</h4>
+        <p>Transparent public community feedback platform featuring customer testimonials, star ratings, and verified buyer badges.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">📲</div>
+      <div class="pill-content">
+        <h4>Official PWA App Installation</h4>
+        <p>1-Click installable Progressive Web App directly to smartphone home screens or desktops for offline catalog capability.</p>
+      </div>
+    </div>
+    
+    <div class="pill-card">
+      <div class="pill-icon">💬</div>
+      <div class="pill-content">
+        <h4>WhatsApp Floating Concierge &amp; Socials</h4>
+        <p>Instant 1-click VIP support on WhatsApp (+880 1640-026177), Email, Google Maps showroom location, &amp; Telegram.</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-brand"><span>∞</span> NEXORA Platform Architecture</div>
+    <div>Directed by Jakaria Tanim</div>
+    <div class="footer-url">nexorabd.pages.dev</div>
+  </div>
+</div>
+
+<!-- SLIDE 5: ADMIN GOVERNANCE & ROLES -->
+<div class="slide">
+  <div>
+    <div class="header-tag">SYSTEM SPECIFICATION 04</div>
+    <div class="header-title">Executive Governance &amp; Staff Hierarchy Matrix</div>
+    <div class="header-divider"></div>
+  </div>
+  
+  <div class="grid-2">
+    <div class="card accent-amber">
+      <span class="badge badge-amber">Owner &amp; Chief Architect</span>
+      <div class="card-icon">👑</div>
+      <h3 class="card-title">Super Administrator (Jakaria Tanim)</h3>
+      <p class="card-desc">Highest tier governance possessing the immutable Master Key. Controls complete platform architecture, creates administrators, resets staff credentials, configures global store parameters, and manages the Founder's Vision statement.</p>
+      <ul class="feature-list" style="margin-top: 12px;">
+        <li>Full authority over all staff members and permission overrides.</li>
+        <li>Exclusive access to emergency Master Key password reset utilities.</li>
+        <li>Direct editing of Founder's public vision and bio profile.</li>
+      </ul>
+    </div>
+    
+    <div class="card accent-blue">
+      <span class="badge badge-blue">Executive Management</span>
+      <div class="card-icon">🛡️</div>
+      <h3 class="card-title">Administrator</h3>
+      <p class="card-desc">Day-to-day administrative authority. Manages active catalog hardware, oversees customer order workflows, creates promotional coupons, resolves RMA claims, and moderates customer reviews.</p>
+      <ul class="feature-list" style="margin-top: 12px;">
+        <li>Complete product CRUD (Add, Edit, Specs, Price BDT/USD, In-Stock toggle).</li>
+        <li>Fulfillment order management and status progression.</li>
+        <li>Campaign discount coupons creation (Fixed or Percentage discounts).</li>
+      </ul>
+    </div>
+    
+    <div class="card accent-emerald">
+      <span class="badge badge-emerald">Catalog Specialist</span>
+      <div class="card-icon">📦</div>
+      <h3 class="card-title">Inventory Moderator</h3>
+      <p class="card-desc">Specialized catalog curator focusing on product telemetry, specification data accuracy, category taxonomy, and stock count tracking across all 10 flagship brands.</p>
+      <ul class="feature-list" style="margin-top: 12px;">
+        <li>Creation and maintenance of dynamic store product categories.</li>
+        <li>Stock inventory telemetry tracking (in-stock vs. out-of-stock).</li>
+        <li>Hardware spec verification for accurate device comparison data.</li>
+      </ul>
+    </div>
+    
+    <div class="card accent-purple">
+      <span class="badge badge-blue">Operations &amp; Logistics</span>
+      <div class="card-icon">🚚</div>
+      <h3 class="card-title">Order Supervisor / Logistics</h3>
+      <p class="card-desc">Dedicated fulfillment operations supervisor. Monitors incoming customer orders, coordinates dispatch, updates 5-stage shipment states, and ensures delivery SLAs are met.</p>
+      <ul class="feature-list" style="margin-top: 12px;">
+        <li>Live order queue monitoring and customer address verification.</li>
+        <li>5-stage tracking updates (Pending → Processing → Shipped → Delivered).</li>
+        <li>RMA replacement hardware coordination with delivery partners.</li>
+      </ul>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-brand"><span>∞</span> NEXORA Platform Architecture</div>
+    <div>Directed by Jakaria Tanim</div>
+    <div class="footer-url">nexorabd.pages.dev</div>
+  </div>
+</div>
+
+<!-- SLIDE 6: FOUNDER ROI & BUSINESS VALUE -->
+<div class="slide">
+  <div>
+    <div class="header-tag">SYSTEM SPECIFICATION 05</div>
+    <div class="header-title">Owner &amp; Founder Strategic Value (Jakaria Tanim)</div>
+    <div class="header-divider"></div>
+  </div>
+  
+  <div class="grid-3">
+    <div class="card accent-blue">
+      <div class="card-icon">🏆</div>
+      <h3 class="card-title">100% Brand Ownership</h3>
+      <p class="card-desc">Zero reliance on third-party marketplace platforms (Shopify, Daraz, WooCommerce). Full ownership of source code, customer database, and store algorithms with zero recurring platform commission fees.</p>
+    </div>
+    
+    <div class="card accent-emerald">
+      <div class="card-icon">💸</div>
+      <h3 class="card-title">$0 Serverless Overhead</h3>
+      <p class="card-desc">Hosted on Cloudflare Pages global Edge network with GitHub CI/CD automation. Zero monthly hosting bills, zero server patch overhead, and unlimited bandwidth that automatically handles millions of visits.</p>
+    </div>
+    
+    <div class="card accent-amber">
+      <div class="card-icon">📊</div>
+      <h3 class="card-title">Executive Telemetry</h3>
+      <p class="card-desc">Comprehensive executive dashboard reporting total confirmed order revenue (৳), catalog hardware counts, stock levels, active categories, and customer satisfaction metrics in real time.</p>
+    </div>
+    
+    <div class="card accent-purple">
+      <div class="card-icon">🚀</div>
+      <h3 class="card-title">Multi-Channel Staff Onboarding</h3>
+      <p class="card-desc">1-Click tokenized invite system allowing the founder to securely onboard new administrators or moderators via direct WhatsApp, Telegram, Email, or copied link invitations with instant role assignment.</p>
+    </div>
+    
+    <div class="card accent-blue">
+      <div class="card-icon">💎</div>
+      <h3 class="card-title">Apple-Grade Brand Equity</h3>
+      <p class="card-desc">Bespoke Dark Cyber aesthetics, typography, spring physics, and mobile-first responsiveness that establishes NEXORA as Bangladesh's most prestigious authorized hardware destination.</p>
+    </div>
+    
+    <div class="card accent-emerald">
+      <div class="card-icon">📈</div>
+      <h3 class="card-title">Infinite Scalability</h3>
+      <p class="card-desc">Engineered on modular Next.js 14 architecture ready for seamless expansion into multi-warehouse inventory, international multi-currency gateways, and automated SMS notification integrations.</p>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <div class="footer-brand"><span>∞</span> NEXORA Platform Architecture</div>
+    <div>Directed by Jakaria Tanim</div>
+    <div class="footer-url">nexorabd.pages.dev</div>
+  </div>
+</div>
+
+</body>
+</html>
