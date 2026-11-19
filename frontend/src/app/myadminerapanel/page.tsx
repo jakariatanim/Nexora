@@ -224,6 +224,7 @@ export default function AdminEraPanel() {
 
   // Profile Modal State (Full Profile Card & Privacy Settings)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [profileForm, setProfileForm] = useState({
     name: 'Jakaria Tanim',
     username: 'jakaria',
@@ -604,6 +605,48 @@ export default function AdminEraPanel() {
     }
   };
 
+  // Open View-Only Executive Profile Modal
+  const openExecutiveProfileModal = () => {
+    const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
+    setProfileForm({
+      name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
+      username: activePerson?.username || currentUser?.username || 'jakaria',
+      email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
+      password: '',
+      confirmPassword: '',
+      phone: activePerson?.phone || currentUser?.phone || '+880 1640-026177',
+      address: currentUser?.address || 'Dhaka, Bangladesh',
+      showPassword: false
+    });
+    setProfileErrorMsg('');
+    setProfileSuccessMsg('');
+    setProfileCurrentPassword('');
+    setShowCurrentPassword(false);
+    setIsEditProfileModalOpen(false);
+    setIsProfileModalOpen(true);
+  };
+
+  // Open Dedicated Edit Profile & Password Popup (আলাদা পপআপ)
+  const openEditProfileModal = () => {
+    const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
+    setProfileForm({
+      name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
+      username: activePerson?.username || currentUser?.username || 'jakaria',
+      email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
+      password: '',
+      confirmPassword: '',
+      phone: activePerson?.phone || currentUser?.phone || '+880 1640-026177',
+      address: currentUser?.address || 'Dhaka, Bangladesh',
+      showPassword: false
+    });
+    setProfileErrorMsg('');
+    setProfileSuccessMsg('');
+    setProfileCurrentPassword('');
+    setShowCurrentPassword(false);
+    setIsProfileModalOpen(false);
+    setIsEditProfileModalOpen(true);
+  };
+
   // Save Full Profile & Privacy Settings (Super Admin / Logged-in User)
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -670,8 +713,9 @@ export default function AdminEraPanel() {
     setProfileForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
     setTimeout(() => {
       setProfileSuccessMsg('');
-      setIsEditingProfile(false);
-    }, 1500);
+      setIsEditProfileModalOpen(false);
+      setIsProfileModalOpen(true);
+    }, 1200);
   };
 
   // Emergency Admin Password Reset
@@ -1315,25 +1359,7 @@ export default function AdminEraPanel() {
 
           {/* Admin / Moderator Profile & Privacy Settings */}
           <button
-            onClick={() => {
-              const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
-              setProfileForm({
-                name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
-                username: activePerson?.username || currentUser?.username || 'jakaria',
-                email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
-                password: '',
-                confirmPassword: '',
-                phone: activePerson?.phone || '+880 1640-026177',
-                address: currentUser?.address || 'Dhaka, Bangladesh',
-                showPassword: false
-              });
-              setProfileCurrentPassword('');
-              setShowCurrentPassword(false);
-              setProfileErrorMsg('');
-              setProfileSuccessMsg('');
-              setIsEditingProfile(false);
-              setIsProfileModalOpen(true);
-            }}
+            onClick={openExecutiveProfileModal}
             className="relative group w-[38px] h-[38px] rounded-xl flex items-center justify-center text-amber-300 hover:text-amber-200 hover:bg-white/10 transition-all cursor-pointer ring-1 ring-amber-400/30"
             aria-label="My Profile & Credentials"
           >
@@ -1445,7 +1471,7 @@ export default function AdminEraPanel() {
               <button
                 onClick={() => {
                   setIsMobileNavOpen(false);
-                  setIsProfileModalOpen(true);
+                  openExecutiveProfileModal();
                 }}
                 className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-300"
               >
@@ -1504,20 +1530,7 @@ export default function AdminEraPanel() {
             <div className="flex items-center gap-2">
               {/* Super Admin / Staff User Badge - Click to open Full Profile */}
               <div
-                onClick={() => {
-                  const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
-                  setProfileForm({
-                    name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
-                    username: activePerson?.username || currentUser?.username || 'jakaria',
-                    email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
-                    password: activePerson?.password || 'NexoraSuperAdmin2026!',
-                    confirmPassword: activePerson?.password || 'NexoraSuperAdmin2026!',
-                    phone: activePerson?.phone || '+880 1640-026177',
-                    address: currentUser?.address || 'Dhaka, Bangladesh',
-                    showPassword: false
-                  });
-                  setIsProfileModalOpen(true);
-                }}
+                onClick={openExecutiveProfileModal}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 border border-black/10 dark:border-white/15 cursor-pointer hover:bg-slate-200/80 transition-colors"
                 title="Click to view Full Profile & Privacy Settings"
               >
@@ -2981,22 +2994,24 @@ export default function AdminEraPanel() {
       )}
 
       {/* =========================================================
-          1. FULL PROFILE & PRIVACY SETTINGS MODAL (FOR LOGGED-IN ADMIN/MODERATOR)
+          1. FULL EXECUTIVE PROFILE MODAL (View Profile Details)
           ========================================================= */}
       {isProfileModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-xl bg-white dark:bg-[#141A2E] rounded-3xl border border-black/10 dark:border-white/15 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6">
+          <div className="relative w-full max-w-lg bg-white dark:bg-[#141A2E] rounded-3xl border border-black/10 dark:border-white/15 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto space-y-6">
             
+            {/* Header */}
             <div className="flex items-center justify-between pb-3 border-b border-black/[0.08] dark:border-white/10">
               <div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-[#1D1D1F] dark:text-white">Full Executive Profile</h3>
                 <p className="text-xs text-[#86868B] mt-0.5">
-                  Verified platform identity, active role governance, and personal privacy settings.
+                  Verified platform identity, active governance, and security overview.
                 </p>
               </div>
               <button
                 onClick={() => setIsProfileModalOpen(false)}
                 className="p-1.5 rounded-full bg-[#F5F5F7] dark:bg-white/10 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-white transition-colors"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3008,14 +3023,8 @@ export default function AdminEraPanel() {
                 <span>{profileSuccessMsg}</span>
               </div>
             )}
-            {profileErrorMsg && (
-              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-semibold flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
-                <span>{profileErrorMsg}</span>
-              </div>
-            )}
 
-            {/* PART 1: FULL PROFILE CARD */}
+            {/* Profile Avatar Card */}
             <div className="p-5 rounded-2xl bg-[#F8F9FA] dark:bg-white/5 border border-black/[0.08] dark:border-white/10 flex flex-col sm:flex-row items-center gap-5">
               <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden bg-[#0B132B] border-2 border-[#0071E3] flex-shrink-0 shadow-md">
                 <Image
@@ -3038,17 +3047,6 @@ export default function AdminEraPanel() {
                   @{profileForm.username} • Authorized Master Key
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-[#6E6E73] dark:text-[#A1A1A6] pt-1">
-                  <span className="inline-flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-gray-400" />
-                    {profileForm.address || 'Dhaka, Bangladesh'}
-                  </span>
-                  <span className="inline-flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-gray-400" />
-                    {profileForm.phone || '+880 1640-026177'}
-                  </span>
-                </div>
-
                 <div className="pt-2">
                   <a
                     href="https://www.facebook.com/iamJakariaTanim"
@@ -3060,254 +3058,274 @@ export default function AdminEraPanel() {
                   </a>
                 </div>
               </div>
+            </div>
 
-              {/* Edit Mode Toggle Button */}
-              <div className="self-center sm:self-start">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsEditingProfile(!isEditingProfile);
-                    setProfileErrorMsg('');
-                    setProfileSuccessMsg('');
-                    setProfileCurrentPassword('');
-                    setProfileForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
-                  }}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm ${
-                    isEditingProfile
-                      ? 'bg-gray-200 dark:bg-white/10 text-[#1D1D1F] dark:text-white hover:bg-gray-300'
-                      : 'bg-[#0071E3] text-white hover:bg-[#0077ED]'
-                  }`}
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  <span>{isEditingProfile ? 'Cancel Edit' : 'Edit Profile'}</span>
-                </button>
+            {/* Credentials & Details Overview */}
+            <div className="p-5 rounded-2xl bg-[#F5F5F7] dark:bg-white/5 border border-black/5 dark:border-white/10 space-y-3.5">
+              <h5 className="text-xs font-mono uppercase tracking-wider text-[#86868B] font-bold">
+                Account &amp; Security Credentials
+              </h5>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-xs text-[#86868B] block font-medium">Login Email</span>
+                  <span className="font-semibold text-[#1D1D1F] dark:text-white font-mono break-all">{profileForm.email}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-[#86868B] block font-medium">Contact Phone</span>
+                  <span className="font-semibold text-[#1D1D1F] dark:text-white">{profileForm.phone}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-[#86868B] block font-medium">Residential / Office Address</span>
+                  <span className="font-semibold text-[#1D1D1F] dark:text-white">{profileForm.address}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-[#86868B] block font-medium">Password Security</span>
+                  <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">•••••••••••• (Encrypted)</span>
+                </div>
               </div>
             </div>
 
-            {/* If NOT in Edit Mode: Clean Overview */}
-            {!isEditingProfile && (
-              <div className="space-y-4 pt-1">
-                <div className="p-4 rounded-2xl bg-[#F5F5F7] dark:bg-white/5 border border-black/5 dark:border-white/10 space-y-3">
-                  <h5 className="text-xs font-mono uppercase tracking-wider text-[#86868B] font-semibold">
-                    Account Security &amp; Credentials Overview
-                  </h5>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <span className="text-xs text-[#86868B] block">Login Email</span>
-                      <span className="font-semibold text-[#1D1D1F] dark:text-white font-mono">{profileForm.email}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#86868B] block">Primary Phone</span>
-                      <span className="font-semibold text-[#1D1D1F] dark:text-white">{profileForm.phone}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#86868B] block">Location</span>
-                      <span className="font-semibold text-[#1D1D1F] dark:text-white">{profileForm.address}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#86868B] block">Password Security</span>
-                      <span className="font-semibold text-emerald-600 dark:text-emerald-400 font-mono">•••••••••••• (Encrypted)</span>
-                    </div>
-                  </div>
-                </div>
+            {/* Modal Actions */}
+            <div className="pt-2 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+              <button
+                type="button"
+                onClick={() => setIsProfileModalOpen(false)}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-sm font-semibold text-[#1D1D1F] dark:text-white transition-colors"
+              >
+                Close
+              </button>
 
-                <div className="pt-2 flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditingProfile(true);
-                      setProfileErrorMsg('');
-                      setProfileSuccessMsg('');
-                      setProfileCurrentPassword('');
-                      setProfileForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
-                    }}
-                    className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#1D1D1F] dark:bg-white hover:bg-[#0071E3] dark:hover:bg-[#0071E3] text-white dark:text-[#1D1D1F] dark:hover:text-white text-sm font-bold transition-all shadow-md active:scale-95"
-                  >
-                    <Edit2 className="w-4 h-4" />
-                    <span>Edit Profile &amp; Change Password</span>
-                  </button>
+              {/* SEPARATE EDIT BUTTON (আলাদা বাটন) */}
+              <button
+                type="button"
+                onClick={openEditProfileModal}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95"
+              >
+                <Edit2 className="w-4 h-4" />
+                <span>Edit Profile &amp; Change Password</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          2. DEDICATED EDIT PROFILE & CHANGE PASSWORD POPUP (আলাদা পপআপ)
+          ========================================================= */}
+      {isEditProfileModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/65 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-xl bg-white dark:bg-[#141A2E] rounded-3xl border border-black/10 dark:border-white/15 shadow-2xl p-6 sm:p-8 max-h-[92vh] overflow-y-auto space-y-5">
+            
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-black/[0.08] dark:border-white/10">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#0071E3]/10 text-[#0071E3] flex items-center justify-center">
+                  <Edit2 className="w-5 h-5" />
                 </div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-[#1D1D1F] dark:text-white">
+                    Edit Profile &amp; Privacy Settings
+                  </h3>
+                  <p className="text-xs text-[#86868B] mt-0.5">
+                    Update personal credentials, username, contact info, and password.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsEditProfileModalOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
+                className="p-1.5 rounded-full bg-[#F5F5F7] dark:bg-white/10 text-[#86868B] hover:text-[#1D1D1F] dark:hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Success and Error Banners */}
+            {profileSuccessMsg && (
+              <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-sm font-semibold flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>{profileSuccessMsg}</span>
+              </div>
+            )}
+            {profileErrorMsg && (
+              <div className="p-3.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 text-sm font-semibold flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
+                <span>{profileErrorMsg}</span>
               </div>
             )}
 
-            {/* If in Edit Mode: Full Editing Form with Required Current Password */}
-            {isEditingProfile && (
-              <form onSubmit={handleSaveProfile} className="space-y-4 pt-1">
-                <div className="pb-1 border-b border-black/[0.06] dark:border-white/10">
-                  <h5 className="text-sm font-bold text-[#1D1D1F] dark:text-white flex items-center gap-1.5">
-                    <Lock className="w-4 h-4 text-[#0071E3]" />
-                    <span>Edit Profile &amp; Privacy Settings</span>
-                  </h5>
-                  <p className="text-xs text-[#86868B] mt-0.5">
-                    Update your personal details below. To change your password, your current password is strictly required.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={profileForm.name}
-                      onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={profileForm.username}
-                      onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono font-bold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                      Login Email
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={profileForm.email}
-                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                      Contact Phone
-                    </label>
-                    <input
-                      type="text"
-                      value={profileForm.phone}
-                      onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                    />
-                  </div>
-                </div>
-
+            <form onSubmit={handleSaveProfile} className="space-y-4">
+              {/* Row 1: Full Name & Username */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                    Residential / Office Address
+                    Full Name *
                   </label>
                   <input
                     type="text"
-                    value={profileForm.address}
-                    onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
-                    placeholder="e.g. Dhaka, Bangladesh"
+                    required
+                    value={profileForm.name}
+                    onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
                   />
                 </div>
 
-                {/* Password Change Box with Current Password Requirement */}
-                <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                      Change Password (Requires Current Password)
-                    </span>
-                    <span className="text-[11px] text-amber-700/80 dark:text-amber-400/80">
-                      Leave blank if keeping current password
-                    </span>
-                  </div>
+                <div>
+                  <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
+                    Username *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={profileForm.username}
+                    onChange={(e) => setProfileForm({ ...profileForm, username: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono font-bold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+              </div>
 
-                  {/* 1. Current Password Field */}
+              {/* Row 2: Login Email & Contact Phone */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
+                    Login Email *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={profileForm.email}
+                    onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
+                    Contact Phone
+                  </label>
+                  <input
+                    type="text"
+                    value={profileForm.phone}
+                    onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+              </div>
+
+              {/* Row 3: Residential / Office Address */}
+              <div>
+                <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
+                  Residential / Office Address
+                </label>
+                <input
+                  type="text"
+                  value={profileForm.address}
+                  onChange={(e) => setProfileForm({ ...profileForm, address: e.target.value })}
+                  placeholder="e.g. Dhaka, Bangladesh"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-semibold text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                />
+              </div>
+
+              {/* Password Section (Distinct Highlighted Card) */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 space-y-3.5">
+                <div className="flex items-center justify-between flex-wrap gap-1">
+                  <span className="text-xs font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1.5">
+                    <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    Change Password (Optional)
+                  </span>
+                  <span className="text-[11px] text-amber-700/90 dark:text-amber-400/90">
+                    Leave blank to keep your current password
+                  </span>
+                </div>
+
+                {/* Current Password Field */}
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="text-xs font-bold text-[#1D1D1F] dark:text-white">
+                      Current Password <span className="text-red-500 font-bold">* (Strictly required to change password)</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="text-xs text-[#0071E3] font-medium hover:underline"
+                    >
+                      {showCurrentPassword ? 'Hide' : 'Show'}
+                    </button>
+                  </div>
+                  <input
+                    type={showCurrentPassword ? 'text' : 'password'}
+                    value={profileCurrentPassword}
+                    onChange={(e) => setProfileCurrentPassword(e.target.value)}
+                    placeholder="Enter your current password to authorize changes"
+                    className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                {/* New Password & Confirm Password */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-bold text-[#1D1D1F] dark:text-white">
-                        Current Password <span className="text-red-500 font-bold">*</span>
+                        New Password
                       </label>
                       <button
                         type="button"
-                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                        className="text-xs text-[#0071E3] font-medium"
+                        onClick={() => setProfileForm({ ...profileForm, showPassword: !profileForm.showPassword })}
+                        className="text-xs text-[#0071E3] font-medium hover:underline"
                       >
-                        {showCurrentPassword ? 'Hide' : 'Show'}
+                        {profileForm.showPassword ? 'Hide' : 'Show'}
                       </button>
                     </div>
                     <input
-                      type={showCurrentPassword ? 'text' : 'password'}
-                      value={profileCurrentPassword}
-                      onChange={(e) => setProfileCurrentPassword(e.target.value)}
-                      placeholder="Enter your current password"
-                      className="w-full px-4 py-2 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                      type={profileForm.showPassword ? 'text' : 'password'}
+                      value={profileForm.password}
+                      onChange={(e) => setProfileForm({ ...profileForm, password: e.target.value })}
+                      placeholder="Enter new password (min 6 chars)"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
                     />
                   </div>
 
-                  {/* 2. New Password & Confirm New Password */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                    <div>
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-bold text-[#1D1D1F] dark:text-white">
-                          New Password
-                        </label>
-                        <button
-                          type="button"
-                          onClick={() => setProfileForm({ ...profileForm, showPassword: !profileForm.showPassword })}
-                          className="text-xs text-[#0071E3] font-medium"
-                        >
-                          {profileForm.showPassword ? 'Hide' : 'Show'}
-                        </button>
-                      </div>
-                      <input
-                        type={profileForm.showPassword ? 'text' : 'password'}
-                        value={profileForm.password}
-                        onChange={(e) => setProfileForm({ ...profileForm, password: e.target.value })}
-                        placeholder="Enter new password (min 6 chars)"
-                        className="w-full px-4 py-2 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
-                        Confirm New Password
-                      </label>
-                      <input
-                        type={profileForm.showPassword ? 'text' : 'password'}
-                        value={profileForm.confirmPassword}
-                        onChange={(e) => setProfileForm({ ...profileForm, confirmPassword: e.target.value })}
-                        placeholder="Re-type new password"
-                        className="w-full px-4 py-2 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#1D1D1F] dark:text-white mb-1">
+                      Confirm New Password
+                    </label>
+                    <input
+                      type={profileForm.showPassword ? 'text' : 'password'}
+                      value={profileForm.confirmPassword}
+                      onChange={(e) => setProfileForm({ ...profileForm, confirmPassword: e.target.value })}
+                      placeholder="Re-type new password"
+                      className="w-full px-4 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-sm font-mono text-[#1D1D1F] dark:text-white focus:outline-none focus:border-[#0071E3]"
+                    />
                   </div>
                 </div>
+              </div>
 
-                <div className="pt-2 flex items-center justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditingProfile(false);
-                      setProfileErrorMsg('');
-                      setProfileSuccessMsg('');
-                      setProfileCurrentPassword('');
-                      setProfileForm(prev => ({ ...prev, password: '', confirmPassword: '' }));
-                    }}
-                    className="px-5 py-2.5 rounded-full border border-black/15 dark:border-white/20 text-sm font-semibold hover:bg-black/5 dark:hover:bg-white/5"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-7 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-bold text-sm tracking-wide shadow-md transition-all active:scale-95"
-                  >
-                    Save Profile &amp; Privacy Settings
-                  </button>
-                </div>
-              </form>
-            )}
+              {/* Form Actions */}
+              <div className="pt-3 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsEditProfileModalOpen(false);
+                    setIsProfileModalOpen(true);
+                  }}
+                  className="px-5 py-2.5 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-sm font-semibold text-[#1D1D1F] dark:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all active:scale-95"
+                >
+                  Save Profile &amp; Privacy Settings
+                </button>
+              </div>
+            </form>
+
           </div>
         </div>
       )}
