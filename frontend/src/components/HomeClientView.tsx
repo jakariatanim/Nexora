@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import { HeroSection } from './HeroSection';
 import { FounderSection } from './FounderSection';
 import { ReviewsSection } from './ReviewsSection';
+import { AppInstallBanner } from './AppInstallBanner';
 import { Product, Review } from '../lib/types';
 import { useCart } from '../lib/cartContext';
 import Link from 'next/link';
@@ -397,6 +398,9 @@ export const HomeClientView: React.FC<HomeClientViewProps> = ({ products, review
 
       {/* 5. Founder's Vision */}
       <FounderSection />
+
+      {/* 6. Official App Install Banner */}
+      <AppInstallBanner />
     </div>
   );
 };

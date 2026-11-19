@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Download, Check, Sparkles, Smartphone } from 'lucide-react';
+import { Download, Check, Sparkles } from 'lucide-react';
 import { usePWA } from './PWAProvider';
 
 export const AppInstallBanner: React.FC = () => {
@@ -45,24 +44,15 @@ export const AppInstallBanner: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Side: Install Action Button & Simulator Link */}
-        <div className="z-10 w-full md:w-auto flex flex-col sm:flex-row items-center gap-3">
-          <Link
-            href="/app-demo"
-            className="w-full sm:w-auto px-5 py-3.5 rounded-full font-medium text-xs sm:text-sm tracking-wide bg-black/5 hover:bg-black/10 dark:bg-white/10 dark:hover:bg-white/20 text-[#1D1D1F] dark:text-white transition-all flex items-center justify-center gap-2 border border-black/10 dark:border-white/10 active:scale-95"
-            title="Open Interactive Mobile Simulator on PC"
-          >
-            <Smartphone className="w-4 h-4 text-[#0071E3] dark:text-[#38BDF8]" />
-            <span>Mobile Demo on PC</span>
-          </Link>
-
+        {/* Right Side: Install Action Button */}
+        <div className="z-10 w-full md:w-auto flex items-center justify-center">
           <button
             onClick={handleInstallClick}
             disabled={isInstalled || installing}
-            className={`w-full sm:w-auto px-6 py-3.5 rounded-full font-medium text-xs sm:text-sm tracking-wide transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 ${
+            className={`w-full sm:w-auto px-7 py-3.5 rounded-full font-bold text-xs sm:text-sm tracking-wide transition-all shadow-md active:scale-95 flex items-center justify-center gap-2.5 ${
               isInstalled
                 ? 'bg-emerald-600 text-white cursor-default'
-                : 'bg-[#1D1D1F] hover:bg-[#0071E3] dark:bg-[#0071E3] dark:hover:bg-[#0077ED] text-white hover:shadow-lg'
+                : 'bg-[#0071E3] hover:bg-[#0077ED] text-white hover:shadow-lg hover:shadow-blue-500/25'
             }`}
           >
             {isInstalled ? (
