@@ -11,7 +11,6 @@ import { AuthModal } from '../components/AuthModal';
 import { SmoothScroll } from '../components/SmoothScroll';
 import { PageTransition } from '../components/PageTransition';
 import { MobileAppNavBar } from '../components/MobileAppNavBar';
-import { MobileSimulatorFloatingButton } from '../components/MobileSimulatorFloatingButton';
 import { WhatsAppConcierge } from '../components/WhatsAppConcierge';
 
 export const metadata: Metadata = {
@@ -59,7 +58,6 @@ export default function RootLayout({
                 </main>
                 <Footer />
                 <MobileAppNavBar />
-                <MobileSimulatorFloatingButton />
                 <WhatsAppConcierge />
               </SmoothScroll>
             </PWAProvider>

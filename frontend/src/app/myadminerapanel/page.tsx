@@ -84,7 +84,8 @@ import {
   RotateCcw,
   AlertTriangle,
   ArrowRight,
-  ShieldAlert
+  ShieldAlert,
+  Menu
 } from 'lucide-react';
 
 const INITIAL_CATEGORIES: Category[] = [
@@ -238,6 +239,7 @@ export default function AdminEraPanel() {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [profileCurrentPassword, setProfileCurrentPassword] = useState('');
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Category Tab: New Category Form
   const [newCatName, setNewCatName] = useState('');
@@ -1083,9 +1085,9 @@ export default function AdminEraPanel() {
     <div className="min-h-screen bg-[#F5F5F7] dark:bg-[#080E1E] text-[#1D1D1F] dark:text-white flex overflow-x-hidden font-sans">
       
       {/* =========================================================
-          LEFT DOCK: PERMANENT SLEEK VERTICAL ICON DOCK (80px / w-20)
+          LEFT DOCK: SLEEK VERTICAL ICON DOCK (Desktop only: 80px / w-20)
           ========================================================= */}
-      <aside className="fixed top-0 left-0 bottom-0 w-20 bg-[#0B132B] border-r border-white/10 z-40 flex flex-col items-center justify-between py-2.5 select-none shadow-2xl">
+      <aside className="hidden md:flex fixed top-0 left-0 bottom-0 w-20 bg-[#0B132B] border-r border-white/10 z-40 flex-col items-center justify-between py-2.5 select-none shadow-2xl">
         
         {/* Top: Logo & Main Nav Icons */}
         <div className="flex flex-col items-center gap-1 sm:gap-1.5 w-full">
@@ -1356,80 +1358,200 @@ export default function AdminEraPanel() {
       </aside>
 
       {/* =========================================================
-          MAIN WORKSPACE AREA (Left margin 80px to accommodate Dock)
+          MOBILE NAVIGATION DRAWER (Slide-over for screens < md)
           ========================================================= */}
-      <main className="ml-20 flex-1 min-h-screen flex flex-col bg-[#F5F5F7] dark:bg-[#080E1E]">
-        
-        {/* Top Header Bar */}
-        <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0D152A]/95 backdrop-blur-xl border-b border-black/[0.08] dark:border-white/10 px-6 sm:px-8 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#1D1D1F] dark:text-white">
-              {activeTab === 'overview' && 'Dashboard Overview'}
-              {activeTab === 'products' && 'Product Inventory & Catalog'}
-              {activeTab === 'staff' && 'Admins & Moderators Governance'}
-              {activeTab === 'categories' && 'Category Management'}
-              {activeTab === 'orders' && 'Live Customer Orders & Fulfillment'}
-              {activeTab === 'claims' && 'RMA & Warranty Claims Governance'}
-              {activeTab === 'notifications' && 'Notifications & Activity Center'}
-              {activeTab === 'reviews' && 'Customer Experience & Feedback'}
-              {activeTab === 'founder' && "Founder's Vision Profile"}
-              {activeTab === 'coupons' && 'Promo Coupons & Discount Architecture'}
-            </h1>
-            <p className="text-sm text-[#86868B] font-mono mt-0.5">
-              NEXORA Authorized Hardware Platform • Directed by Jakaria Tanim
-            </p>
-          </div>
+      {isMobileNavOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div 
+            onClick={() => setIsMobileNavOpen(false)}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+          />
 
-          <div className="flex items-center gap-3">
-            {/* Super Admin / Staff User Badge - Click to open Full Profile */}
-            <div
-              onClick={() => {
-                const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
-                setProfileForm({
-                  name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
-                  username: activePerson?.username || currentUser?.username || 'jakaria',
-                  email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
-                  password: activePerson?.password || 'NexoraSuperAdmin2026!',
-                  confirmPassword: activePerson?.password || 'NexoraSuperAdmin2026!',
-                  phone: activePerson?.phone || '+880 1640-026177',
-                  address: currentUser?.address || 'Dhaka, Bangladesh',
-                  showPassword: false
-                });
-                setIsProfileModalOpen(true);
-              }}
-              className="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 border border-black/10 dark:border-white/15 cursor-pointer hover:bg-slate-200/80 transition-colors"
-              title="Click to view Full Profile & Privacy Settings"
-            >
-              <div className="w-7 h-7 rounded-full bg-[#0071E3] text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                {(currentUser?.name || 'J').charAt(0).toUpperCase()}
-              </div>
-              <div className="text-left hidden sm:block pr-1">
-                <div className="text-xs font-bold text-[#1D1D1F] dark:text-white leading-tight">
-                  {currentUser?.name || 'Jakaria Tanim'}
+          {/* Drawer Content */}
+          <div className="relative w-72 max-w-[85vw] bg-[#0B132B] text-white h-full z-50 flex flex-col justify-between py-5 px-4 shadow-2xl border-r border-white/10">
+            <div>
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-white/10">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative w-6 h-6">
+                    <Image
+                      src="/brand/nexora_icon_white_transparent.png"
+                      alt="NEXORA"
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                  <div>
+                    <div className="text-sm font-extrabold tracking-wider">NEXORA ADMIN</div>
+                    <div className="text-[10px] text-gray-400 font-mono">Executive Panel</div>
+                  </div>
                 </div>
-                <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-semibold">
-                  {currentUser?.role || 'Super Administrator'}
-                </div>
+                <button
+                  onClick={() => setIsMobileNavOpen(false)}
+                  className="p-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-gray-300"
+                  aria-label="Close Mobile Menu"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
+
+              {/* Navigation Items */}
+              <nav className="mt-4 space-y-1 overflow-y-auto max-h-[calc(100vh-220px)]">
+                {[
+                  { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+                  { id: 'categories', label: 'Category Management', icon: Layers, count: categories.length },
+                  { id: 'products', label: 'Product Inventory', icon: Package, count: products.length },
+                  { id: 'orders', label: 'Customer Orders', icon: ShoppingBag, count: orders.length },
+                  { id: 'staff', label: 'Admins & Staff', icon: ShieldCheck, count: adminMembers.length },
+                  { id: 'claims', label: 'RMA / Claims', icon: RotateCcw, count: claims.length },
+                  { id: 'reviews', label: 'Customer Reviews', icon: Star, count: reviews.length },
+                  { id: 'coupons', label: 'Discount Coupons', icon: Tag, count: coupons.length },
+                  { id: 'founder', label: "Founder's Vision", icon: Compass },
+                  { id: 'notifications', label: 'Notifications', icon: Bell, count: unreadCount },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        setActiveTab(item.id as any);
+                        setIsMobileNavOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive
+                          ? 'bg-[#0071E3] text-white shadow-md'
+                          : 'text-gray-300 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.count !== undefined && (
+                        <span className={`text-[10px] px-2 py-0.5 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-white/10 text-gray-400'}`}>
+                          {item.count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Quick Notification Bell in Header */}
+            {/* Drawer Footer */}
+            <div className="pt-4 border-t border-white/10 space-y-2">
+              <button
+                onClick={() => {
+                  setIsMobileNavOpen(false);
+                  setIsProfileModalOpen(true);
+                }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold text-gray-300"
+              >
+                <UserCircle className="w-4 h-4 text-[#0071E3]" />
+                <span>Executive Profile</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-xs font-bold text-red-400"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          MAIN WORKSPACE AREA (100% width on mobile, left-margin on desktop)
+          ========================================================= */}
+      <main className="ml-0 md:ml-20 flex-1 min-h-screen flex flex-col bg-[#F5F5F7] dark:bg-[#080E1E] w-full min-w-0">
+        
+        {/* Top Header Bar */}
+        <header className="sticky top-0 z-30 bg-white/95 dark:bg-[#0D152A]/95 backdrop-blur-xl border-b border-black/[0.08] dark:border-white/10 px-4 sm:px-8 py-3.5 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Mobile Menu Trigger */}
             <button
-              onClick={() => setActiveTab('notifications')}
-              className={`relative p-2.5 rounded-full border transition-all ${
-                activeTab === 'notifications'
-                  ? 'bg-[#0071E3] text-white border-[#0071E3] shadow-md shadow-blue-500/20'
-                  : 'bg-slate-100 dark:bg-white/10 border-black/10 dark:border-white/15 text-[#1D1D1F] dark:text-white hover:bg-slate-200'
-              }`}
-              title="Open Notifications Center"
+              onClick={() => setIsMobileNavOpen(true)}
+              className="md:hidden p-2 rounded-xl bg-slate-100 dark:bg-white/10 text-[#1D1D1F] dark:text-white border border-black/10 dark:border-white/15 active:scale-95 transition-all flex-shrink-0"
+              aria-label="Open Navigation Menu"
             >
-              <Bell className="w-4 h-4" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] text-[10px] font-bold font-mono rounded-full bg-red-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-[#0D152A] shadow-sm">
-                  {unreadCount > 99 ? '99+' : unreadCount}
-                </span>
-              )}
+              <Menu className="w-5 h-5" />
             </button>
+
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-[#1D1D1F] dark:text-white truncate">
+                {activeTab === 'overview' && 'Dashboard Overview'}
+                {activeTab === 'products' && 'Product Inventory & Catalog'}
+                {activeTab === 'staff' && 'Admins & Moderators Governance'}
+                {activeTab === 'categories' && 'Category Management'}
+                {activeTab === 'orders' && 'Live Customer Orders & Fulfillment'}
+                {activeTab === 'claims' && 'RMA & Warranty Claims Governance'}
+                {activeTab === 'notifications' && 'Notifications & Activity Center'}
+                {activeTab === 'reviews' && 'Customer Experience & Feedback'}
+                {activeTab === 'founder' && "Founder's Vision Profile"}
+                {activeTab === 'coupons' && 'Promo Coupons & Discount Architecture'}
+              </h1>
+              <p className="text-xs sm:text-sm text-[#86868B] font-mono mt-0.5 truncate">
+                NEXORA Authorized Hardware Platform • Directed by Jakaria Tanim
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-between sm:justify-end">
+            <div className="flex items-center gap-2">
+              {/* Super Admin / Staff User Badge - Click to open Full Profile */}
+              <div
+                onClick={() => {
+                  const activePerson = adminMembers.find(m => m.username === currentUser?.username || m.email === currentUser?.email) || adminMembers[0];
+                  setProfileForm({
+                    name: activePerson?.name || currentUser?.name || 'Jakaria Tanim',
+                    username: activePerson?.username || currentUser?.username || 'jakaria',
+                    email: activePerson?.email || currentUser?.email || 'tanim@nexora.com',
+                    password: activePerson?.password || 'NexoraSuperAdmin2026!',
+                    confirmPassword: activePerson?.password || 'NexoraSuperAdmin2026!',
+                    phone: activePerson?.phone || '+880 1640-026177',
+                    address: currentUser?.address || 'Dhaka, Bangladesh',
+                    showPassword: false
+                  });
+                  setIsProfileModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/10 border border-black/10 dark:border-white/15 cursor-pointer hover:bg-slate-200/80 transition-colors"
+                title="Click to view Full Profile & Privacy Settings"
+              >
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#0071E3] text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
+                  {(currentUser?.name || 'J').charAt(0).toUpperCase()}
+                </div>
+                <div className="text-left hidden sm:block pr-1">
+                  <div className="text-xs font-bold text-[#1D1D1F] dark:text-white leading-tight">
+                    {currentUser?.name || 'Jakaria Tanim'}
+                  </div>
+                  <div className="text-[10px] text-amber-600 dark:text-amber-400 font-mono font-semibold">
+                    {currentUser?.role || 'Super Administrator'}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Notification Bell in Header */}
+              <button
+                onClick={() => setActiveTab('notifications')}
+                className={`relative p-2 sm:p-2.5 rounded-full border transition-all ${
+                  activeTab === 'notifications'
+                    ? 'bg-[#0071E3] text-white border-[#0071E3] shadow-md shadow-blue-500/20'
+                    : 'bg-slate-100 dark:bg-white/10 border-black/10 dark:border-white/15 text-[#1D1D1F] dark:text-white hover:bg-slate-200'
+                }`}
+                title="Open Notifications Center"
+              >
+                <Bell className="w-4 h-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 px-1.5 py-0.2 min-w-[18px] text-[10px] font-bold font-mono rounded-full bg-red-500 text-white flex items-center justify-center ring-2 ring-white dark:ring-[#0D152A] shadow-sm">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
 
             {/* Contextual Action Button */}
             {activeTab === 'products' && (
@@ -1451,20 +1573,20 @@ export default function AdminEraPanel() {
                   });
                   setIsProductModalOpen(true);
                 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
               >
                 <Plus className="w-4 h-4" />
-                <span>+ Add Hardware Gadget</span>
+                <span>+ Add Hardware</span>
               </button>
             )}
 
             {activeTab === 'staff' && (
               <button
                 onClick={() => setIsStaffModalOpen(true)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
               >
                 <UserPlus className="w-4 h-4" />
-                <span>+ Add Administrator / Moderator</span>
+                <span>+ Add Staff</span>
               </button>
             )}
 
@@ -1474,7 +1596,7 @@ export default function AdminEraPanel() {
                   const input = document.getElementById('new-cat-input');
                   if (input) input.focus();
                 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition-all active:scale-95"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
               >
                 <Plus className="w-4 h-4" />
                 <span>+ Create Category</span>
@@ -1486,80 +1608,121 @@ export default function AdminEraPanel() {
                 href="/reviews"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#1D1D1F] hover:bg-[#333336] text-white text-sm font-bold shadow-sm transition-all"
+                className="inline-flex items-center gap-1.5 px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#1D1D1F] hover:bg-[#333336] text-white text-xs sm:text-sm font-bold shadow-sm transition-all"
               >
                 <ExternalLink className="w-4 h-4" />
-                <span>Public Reviews Page ↗</span>
+                <span>Reviews ↗</span>
               </a>
             )}
           </div>
         </header>
 
+        {/* Mobile Horizontal Quick Navigation Bar (< md) */}
+        <div className="md:hidden overflow-x-auto scrollbar-none flex items-center gap-2 px-4 py-2.5 bg-white/90 dark:bg-[#0D152A]/90 backdrop-blur border-b border-black/[0.06] dark:border-white/10">
+          {[
+            { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+            { id: 'categories', label: 'Categories', icon: Layers, count: categories.length },
+            { id: 'products', label: 'Products', icon: Package, count: products.length },
+            { id: 'orders', label: 'Orders', icon: ShoppingBag, count: orders.length },
+            { id: 'staff', label: 'Staff', icon: ShieldCheck, count: adminMembers.length },
+            { id: 'claims', label: 'RMA Claims', icon: RotateCcw, count: claims.length },
+            { id: 'reviews', label: 'Reviews', icon: Star, count: reviews.length },
+            { id: 'coupons', label: 'Coupons', icon: Tag, count: coupons.length },
+            { id: 'founder', label: 'Founder', icon: Compass },
+            { id: 'notifications', label: 'Alerts', icon: Bell, count: unreadCount },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex-shrink-0 ${
+                  isActive
+                    ? 'bg-[#0071E3] text-white shadow-sm'
+                    : 'bg-slate-100 dark:bg-white/5 text-gray-700 dark:text-gray-300 hover:bg-slate-200'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+                {tab.count !== undefined && (
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-black/10 dark:bg-white/10 text-gray-500'}`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Content Body */}
-        <div className="p-6 sm:p-8 space-y-8 flex-1">
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 flex-1 w-full min-w-0">
           
-          {/* Toggle Button for Overview Metrics */}
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setShowMetrics(!showMetrics)}
-              className="inline-flex items-center gap-2 text-sm font-bold text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span>{showMetrics ? 'Hide Executive Metrics' : 'Show Executive Metrics'}</span>
-              {showMetrics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-          </div>
-
-          {/* Top Performance Analytics Row - UNIFORM CLEAN CARD BACKGROUND */}
-          {showMetrics && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fade-in">
-              <div className="p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Total Revenue</span>
-                  <span className="text-emerald-600 font-mono text-base font-bold">৳</span>
-                </div>
-                <div className="mt-3 text-3xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-                  ৳{totalRevenue.toLocaleString()}
-                </div>
-                <p className="mt-1.5 text-xs text-[#86868B]">Across all confirmed customer orders</p>
+          {/* Executive Metrics Row (Visible strictly on Overview Tab) */}
+          {activeTab === 'overview' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setShowMetrics(!showMetrics)}
+                  className="inline-flex items-center gap-2 text-sm font-bold text-[#6E6E73] hover:text-[#1D1D1F] transition-colors"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <span>{showMetrics ? 'Hide Executive Metrics' : 'Show Executive Metrics'}</span>
+                  {showMetrics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                </button>
               </div>
 
-              <div className="p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Catalog Hardware</span>
-                  <Package className="w-5 h-5 text-[#0071E3]" />
-                </div>
-                <div className="mt-3 text-3xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-                  {products.length} Gadgets
-                </div>
-                <p className="mt-1.5 text-xs text-emerald-600 font-bold">
-                  {products.filter(p => p.inStock).length} currently in stock
-                </p>
-              </div>
+              {showMetrics && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fade-in">
+                  <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Total Revenue</span>
+                      <span className="text-emerald-600 font-mono text-base font-bold">৳</span>
+                    </div>
+                    <div className="mt-3 text-2xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+                      ৳{totalRevenue.toLocaleString()}
+                    </div>
+                    <p className="mt-1.5 text-xs text-[#86868B]">Across all confirmed customer orders</p>
+                  </div>
 
-              <div className="p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Active Categories</span>
-                  <Layers className="w-5 h-5 text-purple-600" />
-                </div>
-                <div className="mt-3 text-3xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-                  {categories.length}
-                </div>
-                <p className="mt-1.5 text-xs text-[#86868B] truncate">
-                  Smartphones, Audio, Chargers &amp; Power
-                </p>
-              </div>
+                  <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Catalog Hardware</span>
+                      <Package className="w-5 h-5 text-[#0071E3]" />
+                    </div>
+                    <div className="mt-3 text-2xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+                      {products.length} Gadgets
+                    </div>
+                    <p className="mt-1.5 text-xs text-emerald-600 font-bold">
+                      {products.filter(p => p.inStock).length} currently in stock
+                    </p>
+                  </div>
 
-              <div className="p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Customer Reviews</span>
-                  <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+                  <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Active Categories</span>
+                      <Layers className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div className="mt-3 text-2xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+                      {categories.length}
+                    </div>
+                    <p className="mt-1.5 text-xs text-[#86868B] truncate">
+                      Smartphones, Audio, Chargers &amp; Power
+                    </p>
+                  </div>
+
+                  <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#151D30] border border-black/[0.08] dark:border-white/10 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-mono uppercase tracking-wider text-[#6E6E73] font-bold">Customer Reviews</span>
+                      <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+                    </div>
+                    <div className="mt-3 text-2xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
+                      {reviews.length} Reviews
+                    </div>
+                    <p className="mt-1.5 text-xs text-amber-600 font-bold">4.9 ★ Average customer rating</p>
+                  </div>
                 </div>
-                <div className="mt-3 text-3xl sm:text-4xl font-extrabold text-[#1D1D1F] dark:text-white tracking-tight">
-                  {reviews.length} Reviews
-                </div>
-                <p className="mt-1.5 text-xs text-amber-600 font-bold">4.9 ★ Average customer rating</p>
-              </div>
+              )}
             </div>
           )}
 

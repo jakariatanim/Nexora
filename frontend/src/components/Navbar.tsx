@@ -159,14 +159,6 @@ export const Navbar: React.FC = () => {
               >
                 Track Order
               </Link>
-              <Link
-                href="/app-demo"
-                className="text-white/90 hover:text-[#38BDF8] transition-colors flex items-center gap-1"
-                title="Interactive Mobile App Simulator"
-              >
-                <span>App Demo</span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#0071E3] text-white">Live</span>
-              </Link>
             </div>
           )}
 
