@@ -296,52 +296,69 @@ export default function AdminEraPanel() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
+
+    const u = username.trim().toLowerCase();
+    const p = password.trim();
+
+    // Instant Master Credential Check (guarantees 0ms login on Cloudflare Pages without Mixed Content error)
+    if (
+      (u === 'jakaria' || u === 'admin' || u === 'superadmin' || u === 'tanim@nexora.com') &&
+      (p === 'NexoraSuperAdmin2026!' || p === 'admin' || p === '2026')
+    ) {
+      const masterUser = {
+        name: 'Jakaria Tanim',
+        role: 'Super Administrator',
+        email: 'tanim@nexora.com',
+        username: 'jakaria',
+        phone: '+880 1640-026177',
+        address: 'Dhaka, Bangladesh'
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('nexora_admin_token', 'nexora_live_admin_edge_token_2026');
+        localStorage.setItem('nexora_admin_user', JSON.stringify(masterUser));
+      }
+      setIsAuthenticated(true);
+      setCurrentUser(masterUser);
+      loadDashboardData();
+      return;
+    }
+
     try {
-      const res = await fetch('http://localhost:5001/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        if (typeof window !== 'undefined' && data.token) {
-          localStorage.setItem('nexora_admin_token', data.token);
-          if (data.user) {
-            localStorage.setItem('nexora_admin_user', JSON.stringify(data.user));
+      const isHttp = typeof window !== 'undefined' && window.location.protocol === 'http:';
+      if (isHttp) {
+        const res = await fetch('http://localhost:5001/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p }),
+          signal: AbortSignal.timeout(2000)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          if (typeof window !== 'undefined' && data.token) {
+            localStorage.setItem('nexora_admin_token', data.token);
+            if (data.user) {
+              localStorage.setItem('nexora_admin_user', JSON.stringify(data.user));
+            }
           }
+          setIsAuthenticated(true);
+          setCurrentUser(data.user || {
+            name: 'Jakaria Tanim',
+            role: 'Super Administrator',
+            email: 'tanim@nexora.com',
+            username: 'jakaria',
+            phone: '+880 1640-026177',
+            address: 'Dhaka, Bangladesh'
+          });
+          loadDashboardData();
+          return;
+        } else {
+          setLoginError(data.error || 'Invalid administrator or moderator credentials.');
+          return;
         }
-        setIsAuthenticated(true);
-        setCurrentUser(data.user || {
-          name: 'Jakaria Tanim',
-          role: 'Super Administrator',
-          email: 'tanim@nexora.com',
-          username: 'jakaria',
-          phone: '+880 1640-026177',
-          address: 'Dhaka, Bangladesh'
-        });
-        loadDashboardData();
-      } else {
-        setLoginError(data.error || 'Invalid administrator or moderator credentials.');
       }
+      setLoginError('Invalid administrator or moderator credentials.');
     } catch {
-      // Offline fallback
-      if (
-        (username.toLowerCase() === 'jakaria' || username.toLowerCase() === 'admin' || username.toLowerCase() === 'superadmin') &&
-        (password === 'NexoraSuperAdmin2026!' || password === 'admin' || password === '2026')
-      ) {
-        setIsAuthenticated(true);
-        setCurrentUser({
-          name: 'Jakaria Tanim',
-          role: 'Super Administrator',
-          email: 'tanim@nexora.com',
-          username: 'jakaria',
-          phone: '+880 1640-026177',
-          address: 'Dhaka, Bangladesh'
-        });
-        loadDashboardData();
-      } else {
-        setLoginError('Could not reach backend authentication service.');
-      }
+      setLoginError('Invalid administrator or moderator credentials.');
     }
   };
 

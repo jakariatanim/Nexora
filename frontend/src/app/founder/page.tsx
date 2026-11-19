@@ -32,7 +32,7 @@ export default async function FounderPage() {
         <div className="md:col-span-5 flex flex-col items-center">
           <div className="relative w-64 sm:w-72 h-80 sm:h-96 max-w-full rounded-2xl sm:rounded-3xl overflow-hidden border border-black/[0.08] shadow-md bg-[#F5F5F7]">
             <Image
-              src="/brand/Jakaria Tanim.jpg"
+              src="/brand/founder_jakaria.png"
               alt="Jakaria Tanim"
               fill
               priority

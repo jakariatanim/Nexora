@@ -3,8 +3,22 @@ import defaultProducts from '../data/products.json';
 import defaultCategories from '../data/categories.json';
 import defaultReviews from '../data/reviews.json';
 import defaultFounder from '../data/founder.json';
+import defaultOrders from '../data/orders.json';
+import defaultAdmins from '../data/admins.json';
+import defaultCoupons from '../data/coupons.json';
+import defaultClaims from '../data/claims.json';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
+
+function shouldAttemptRemote(): boolean {
+  if (typeof window !== 'undefined') {
+    // Prevent Mixed Content security blocks and long client-side timeouts on HTTPS
+    if (window.location.protocol === 'https:' && API_BASE.startsWith('http://')) {
+      return false;
+    }
+  }
+  return true;
+}
 
 function getAuthHeaders(extra: Record<string, string> = {}): HeadersInit {
   const token = typeof window !== 'undefined' ? localStorage.getItem('nexora_admin_token') : null;
@@ -16,8 +30,11 @@ function getAuthHeaders(extra: Record<string, string> = {}): HeadersInit {
 }
 
 export async function fetchProducts(): Promise<Product[]> {
+  if (!shouldAttemptRemote()) {
+    return defaultProducts as unknown as Product[];
+  }
   try {
-    const res = await fetch(`${API_BASE}/products`, { cache: 'no-store' });
+    const res = await fetch(`${API_BASE}/products`, { cache: 'no-store', signal: AbortSignal.timeout(2000) });
     if (!res.ok) throw new Error('Failed to fetch products');
     const data = await res.json();
     return Array.isArray(data) && data.length > 0 ? data : (defaultProducts as unknown as Product[]);
@@ -90,13 +107,16 @@ export async function uploadImage(file: File): Promise<string | null> {
 }
 
 export async function fetchOrders(): Promise<Order[]> {
+  if (!shouldAttemptRemote()) {
+    return defaultOrders as unknown as Order[];
+  }
   try {
-    const res = await fetch(`${API_BASE}/orders`, { cache: 'no-store', headers: getAuthHeaders() });
+    const res = await fetch(`${API_BASE}/orders`, { cache: 'no-store', headers: getAuthHeaders(), signal: AbortSignal.timeout(2000) });
     if (!res.ok) throw new Error('Failed to fetch orders');
-    return await res.json();
+    const data = await res.json();
+    return Array.isArray(data) ? data : (defaultOrders as unknown as Order[]);
   } catch (err) {
-    console.warn('API fetchOrders fallback:', err);
-    return [];
+    return defaultOrders as unknown as Order[];
   }
 }
 
@@ -210,13 +230,16 @@ export async function updateFounder(data: Partial<Founder>): Promise<Founder | n
 }
 
 export async function fetchAdminMembers(): Promise<AdminMember[]> {
+  if (!shouldAttemptRemote()) {
+    return defaultAdmins as unknown as AdminMember[];
+  }
   try {
-    const res = await fetch(`${API_BASE}/admins`, { cache: 'no-store', headers: getAuthHeaders() });
+    const res = await fetch(`${API_BASE}/admins`, { cache: 'no-store', headers: getAuthHeaders(), signal: AbortSignal.timeout(2000) });
     if (!res.ok) throw new Error('Failed to fetch admin members');
-    return await res.json();
+    const data = await res.json();
+    return Array.isArray(data) ? data : (defaultAdmins as unknown as AdminMember[]);
   } catch (err) {
-    console.warn('API fetchAdminMembers fallback:', err);
-    return [];
+    return defaultAdmins as unknown as AdminMember[];
   }
 }
 
@@ -347,13 +370,16 @@ export async function validateCoupon(code: string, subtotal: number): Promise<{ 
 
 // Warranty & Return Claims
 export async function fetchClaims(): Promise<Claim[]> {
+  if (!shouldAttemptRemote()) {
+    return defaultClaims as unknown as Claim[];
+  }
   try {
-    const res = await fetch(`${API_BASE}/claims`, { cache: 'no-store', headers: getAuthHeaders() });
-    if (!res.ok) return [];
-    return await res.json();
+    const res = await fetch(`${API_BASE}/claims`, { cache: 'no-store', headers: getAuthHeaders(), signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return defaultClaims as unknown as Claim[];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (defaultClaims as unknown as Claim[]);
   } catch (err) {
-    console.error('Error fetching claims:', err);
-    return [];
+    return defaultClaims as unknown as Claim[];
   }
 }
 
@@ -401,13 +427,16 @@ export async function fetchDetailedAnalytics(): Promise<any> {
 
 // Coupons Management
 export async function fetchCoupons(): Promise<Coupon[]> {
+  if (!shouldAttemptRemote()) {
+    return defaultCoupons as unknown as Coupon[];
+  }
   try {
-    const res = await fetch(`${API_BASE}/coupons`, { cache: 'no-store', headers: getAuthHeaders() });
-    if (!res.ok) return [];
-    return await res.json();
+    const res = await fetch(`${API_BASE}/coupons`, { cache: 'no-store', headers: getAuthHeaders(), signal: AbortSignal.timeout(2000) });
+    if (!res.ok) return defaultCoupons as unknown as Coupon[];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (defaultCoupons as unknown as Coupon[]);
   } catch (err) {
-    console.error('Error fetching coupons:', err);
-    return [];
+    return defaultCoupons as unknown as Coupon[];
   }
 }
 

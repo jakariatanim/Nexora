@@ -16,7 +16,7 @@ export const FounderSection: React.FC = () => {
           <div className="lg:col-span-5 flex flex-col items-center">
             <div className="relative w-64 h-80 sm:w-72 sm:h-96 rounded-3xl overflow-hidden border border-black/[0.08] dark:border-white/10 shadow-md bg-[#F5F5F7] dark:bg-white/5">
               <Image
-                src="/brand/Jakaria Tanim.jpg"
+                src="/brand/founder_jakaria.png"
                 alt="Jakaria Tanim - Founder & Visionary"
                 fill
                 priority
