@@ -1,0 +1,50 @@
+{
+  "name": "NEXORA — Step into the Next Era",
+  "short_name": "NEXORA",
+  "description": "Bespoke consumer gadgets, intelligent acoustics, and futuristic wearables designed by Jakaria Tanim.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0B132B",
+  "theme_color": "#0B132B",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["shopping", "technology", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore All Devices",
+      "short_name": "Explore",
+      "description": "Browse complete catalog of curated gadgets",
+      "url": "/explore",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Live Order",
+      "short_name": "Track",
+      "description": "Real-time dispatch and logistics telemetry",
+      "url": "/track-order",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

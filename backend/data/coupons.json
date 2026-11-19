@@ -1,0 +1,62 @@
+[
+  {
+    "id": "cpn-1795000057393",
+    "code": "RAMADAN20",
+    "type": "percent",
+    "value": 20,
+    "minSpend": 0,
+    "description": "Special 20% discount",
+    "expiryDate": "2026-12-18T11:07:37.390Z",
+    "active": true,
+    "usageCount": 0,
+    "createdAt": "2026-11-18T11:07:37.393Z"
+  },
+  {
+    "id": "cpn-001",
+    "code": "NEXORA10",
+    "type": "percent",
+    "value": 10,
+    "minSpend": 1000,
+    "description": "10% Discount on Flagship Hardware",
+    "expiryDate": "2026-12-31T23:59:59.000Z",
+    "active": true,
+    "usageCount": 14,
+    "createdAt": "2026-11-01T00:00:00.000Z"
+  },
+  {
+    "id": "cpn-002",
+    "code": "FREESHIP",
+    "type": "freeship",
+    "value": 120,
+    "minSpend": 500,
+    "description": "Free Nationwide Express Delivery",
+    "expiryDate": "2026-12-31T23:59:59.000Z",
+    "active": true,
+    "usageCount": 28,
+    "createdAt": "2026-11-01T00:00:00.000Z"
+  },
+  {
+    "id": "cpn-003",
+    "code": "WELCOME500",
+    "type": "flat",
+    "value": 500,
+    "minSpend": 5000,
+    "description": "৳500 Welcome Voucher for New Members",
+    "expiryDate": "2026-12-31T23:59:59.000Z",
+    "active": true,
+    "usageCount": 9,
+    "createdAt": "2026-11-05T00:00:00.000Z"
+  },
+  {
+    "id": "cpn-004",
+    "code": "JAKARIA2026",
+    "type": "percent",
+    "value": 15,
+    "minSpend": 10000,
+    "description": "15% Founder VIP Reservation Discount",
+    "expiryDate": "2026-12-31T23:59:59.000Z",
+    "active": true,
+    "usageCount": 4,
+    "createdAt": "2026-11-10T00:00:00.000Z"
+  }
+]

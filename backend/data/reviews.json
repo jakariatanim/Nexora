@@ -1,0 +1,83 @@
+[
+  {
+    "id": "rev-1795013514056",
+    "productId": "general",
+    "productName": "Apple iPhone 18 Pro Max",
+    "author": "Jakaria QA Auditor",
+    "rating": 5,
+    "date": "2026-11-18",
+    "comment": "Exceptional tactile hardware response and precision finish. Delivered within 24 hours in Dhaka."
+  },
+  {
+    "id": "rev-1",
+    "productId": "nx-cyber-earbuds",
+    "productName": "NEXORA Cyber Earbuds Pro",
+    "author": "Mahir Faysal",
+    "rating": 5,
+    "date": "2026-11-12",
+    "comment": "The active noise cancellation is surreal. Build quality feels like it came straight out of a Swiss high-tech lab. Spatial audio head tracking is seamless."
+  },
+  {
+    "id": "rev-2",
+    "productId": "nx-neural-ring",
+    "productName": "NEXORA Neural Smart Ring",
+    "author": "Nusrat Jahan",
+    "rating": 4,
+    "date": "2026-11-14",
+    "comment": "Titanium shell is extraordinarily light and sleep tracking is accurate down to the minute. The app took a moment to sync initially, but battery easily lasts a full week."
+  },
+  {
+    "id": "rev-3",
+    "productId": "nx-8k-drone",
+    "productName": "NEXORA Aero 8K Drone",
+    "author": "Zubair Al-Mamun",
+    "rating": 5,
+    "date": "2026-11-15",
+    "comment": "Footage sharpness blew my expectations away. Obstacle avoidance saved me twice in high wind. The 8K HDR dynamic range is cinema-level."
+  },
+  {
+    "id": "rev-4",
+    "productId": "nx-8k-drone",
+    "productName": "NEXORA Aero 8K Drone",
+    "author": "Tahmid Chowdhury",
+    "rating": 4,
+    "date": "2026-11-16",
+    "comment": "Carbon fiber body is rock-solid and flight stability is top-notch. Wish an extra set of propeller guards was included in the base package, but overall a beast of a drone."
+  },
+  {
+    "id": "rev-5",
+    "productId": "iphone-16-pro-max",
+    "productName": "Apple iPhone 16 Pro Max",
+    "author": "Farhan Rahman",
+    "rating": 5,
+    "date": "2026-11-16",
+    "comment": "Natural Titanium finish is gorgeous. Camera Control button is revolutionary for quick street photography. Battery life easily lasts 2 full days."
+  },
+  {
+    "id": "rev-6",
+    "productId": "samsung-s24-ultra",
+    "productName": "Samsung Galaxy S24 Ultra",
+    "author": "Anik Hassan",
+    "rating": 4,
+    "date": "2026-11-15",
+    "comment": "Gorilla Armor anti-reflective display is truly impressive outdoors. S-Pen feels very natural. S24 Ultra is quite heavy in hand, but the performance is unmatched."
+  },
+  {
+    "id": "rev-7",
+    "productId": "apple-watch-ultra-2",
+    "productName": "Apple Watch Ultra 2",
+    "author": "Sadia Islam",
+    "rating": 5,
+    "date": "2026-11-13",
+    "comment": "3000 nits display is blindingly clear even in harsh daylight. The titanium chassis handles rugged outdoor trekking like a tank."
+  },
+  {
+    "id": "rev-8",
+    "productId": "airpods-pro-2",
+    "productName": "Apple AirPods Pro (2nd Gen, USB-C)",
+    "author": "Imran Kabir",
+    "rating": 4,
+    "date": "2026-11-14",
+    "comment": "Adaptive Audio works like magic. Charging via USB-C is so convenient. Ear tips can get slightly slippery during intense cardio workouts, but sound is 10/10."
+  }
+]

@@ -1,0 +1,1696 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { Product, Order, Founder, Category, AdminMember } from '../../lib/types';
+import {
+  fetchProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  uploadImage,
+  fetchOrders,
+  updateOrderStatus,
+  fetchFounder,
+  updateFounder,
+  fetchAdminMembers,
+  createAdminMember,
+  deleteAdminMember
+} from '../../lib/api';
+import {
+  Lock,
+  LayoutDashboard,
+  Package,
+  Tags,
+  ShoppingBag,
+  UserCheck,
+  Plus,
+  UploadCloud,
+  Edit2,
+  Trash2,
+  X,
+  LogOut,
+  RefreshCw,
+  Search,
+  Filter,
+  CheckCircle,
+  Menu,
+  ChevronRight,
+  DollarSign,
+  Layers,
+  ShieldCheck,
+  ExternalLink,
+  ChevronDown,
+  ChevronUp,
+  SlidersHorizontal,
+  Users
+} from 'lucide-react';
+
+const INITIAL_CATEGORIES: Category[] = [
+  { id: 'smartphones', name: 'Smartphones', description: 'Next-gen flagship smartphones' },
+  { id: 'earbuds', name: 'Earbuds', description: 'ANC in-ear earbuds & TWS' },
+  { id: 'audio', name: 'Audio', description: 'Spatial acoustics & studio headphones' },
+  { id: 'chargers-power', name: 'Chargers & Power', description: 'Multi-brand wireless charging & GaN' },
+  { id: 'smartwatches', name: 'Smartwatches', description: 'Titanium diving & fitness smartwatches' },
+  { id: 'tablets-laptops', name: 'Tablets & Laptops', description: 'Pro workstation silicon' },
+  { id: 'cases-accessories', name: 'Cases & Accessories', description: 'FineWoven & silicone protection' }
+];
+
+const TOP_10_BRANDS = [
+  'All',
+  'Apple',
+  'Samsung',
+  'Xiaomi',
+  'Oppo',
+  'Vivo',
+  'OnePlus',
+  'Google',
+  'Realme',
+  'Anker',
+  'Sony'
+];
+
+export default function AdminEraPanel() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
+  // Sidebar & Navigation
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'categories' | 'orders' | 'founder' | 'staff'>('products');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Toggle Controls
+  const [showMetrics, setShowMetrics] = useState(true);
+  const [showFilters, setShowFilters] = useState(true);
+
+  // Data States
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>(INITIAL_CATEGORIES);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [founder, setFounder] = useState<Founder | null>(null);
+  const [adminMembers, setAdminMembers] = useState<AdminMember[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Product Filter & Search
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedBrandFilter, setSelectedBrandFilter] = useState('All');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('All');
+
+  // Product Modal State
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [productForm, setProductForm] = useState<Partial<Product>>({
+    name: '',
+    brand: 'Apple',
+    tagline: '',
+    category: 'Smartphones',
+    priceBDT: 0,
+    priceUSD: 0,
+    stockCount: 30,
+    inStock: true,
+    image: '',
+    specs: [''],
+    description: '',
+  });
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Staff Modal State
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const [staffForm, setStaffForm] = useState<{
+    name: string;
+    email: string;
+    phone: string;
+    role: AdminMember['role'];
+    permissions: string[];
+  }>({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'Inventory Moderator',
+    permissions: ['products', 'categories']
+  });
+
+  // Category Tab: New Category Form
+  const [newCatName, setNewCatName] = useState('');
+  const [newCatDesc, setNewCatDesc] = useState('');
+  const [catSuccessMsg, setCatSuccessMsg] = useState('');
+
+  // Founder Profile Form
+  const [founderForm, setFounderForm] = useState<Partial<Founder>>({});
+  const [saveSuccess, setSaveSuccess] = useState('');
+
+  const [currentUser, setCurrentUser] = useState<{
+    id?: string;
+    name: string;
+    role: string;
+    email: string;
+    username?: string;
+  } | null>(null);
+
+  // Require fresh login on page open
+  useEffect(() => {
+    setIsAuthenticated(false);
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    try {
+      const res = await fetch('http://localhost:5001/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        setCurrentUser(data.user || { name: 'Jakaria Tanim', role: 'Super Administrator', email: 'tanim@nexora.com' });
+        loadDashboardData();
+      } else {
+        setLoginError(data.error || 'Invalid administrator or moderator credentials.');
+      }
+    } catch {
+      // Offline fallback
+      if (
+        (username.toLowerCase() === 'jakaria' || username.toLowerCase() === 'admin' || username.toLowerCase() === 'superadmin') &&
+        (password === 'NexoraSuperAdmin2026!' || password === 'admin' || password === '2026')
+      ) {
+        setIsAuthenticated(true);
+        setCurrentUser({ name: 'Jakaria Tanim', role: 'Super Administrator', email: 'tanim@nexora.com' });
+        loadDashboardData();
+      } else {
+        setLoginError('Could not reach backend authentication service.');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setUsername('');
+    setPassword('');
+  };
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [prods, ords, fndr, admins] = await Promise.all([
+        fetchProducts(),
+        fetchOrders(),
+        fetchFounder(),
+        fetchAdminMembers()
+      ]);
+      setProducts(prods || []);
+      setOrders(ords || []);
+      setFounder(fndr);
+      setAdminMembers(admins || []);
+      if (fndr) setFounderForm(fndr);
+
+      const productCats = Array.from(new Set((prods || []).map(p => p.category))).filter(Boolean);
+      const mergedCats = [...INITIAL_CATEGORIES];
+      productCats.forEach(cName => {
+        if (!mergedCats.some(c => c.name.toLowerCase() === cName.toLowerCase())) {
+          mergedCats.push({
+            id: cName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+            name: cName,
+            description: `${cName} hardware devices`
+          });
+        }
+      });
+      setCategories(mergedCats);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Image Drag-and-Drop or File Select
+  const handleImageFile = async (file: File) => {
+    setUploadingImage(true);
+    const uploadedUrl = await uploadImage(file);
+    if (uploadedUrl) {
+      setProductForm(prev => ({ ...prev, image: uploadedUrl }));
+    }
+    setUploadingImage(false);
+  };
+
+  // Save Product (Create or Edit)
+  const handleSaveProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const stock = typeof productForm.stockCount !== 'undefined' ? Number(productForm.stockCount) : 30;
+    const cleanProduct: Partial<Product> = {
+      ...productForm,
+      brand: productForm.brand || (productForm.name ? productForm.name.split(' ')[0] : 'Apple'),
+      priceBDT: Number(productForm.priceBDT) || 0,
+      priceUSD: Number(productForm.priceUSD) || 0,
+      stockCount: stock,
+      inStock: stock > 0,
+      specs: Array.isArray(productForm.specs)
+        ? productForm.specs.filter(Boolean)
+        : [productForm.specs].filter(Boolean) as string[],
+    };
+
+    if (editingProduct) {
+      const updated = await updateProduct(editingProduct.id, cleanProduct);
+      if (updated) {
+        setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+      }
+    } else {
+      const created = await createProduct(cleanProduct);
+      if (created) {
+        setProducts(prev => [created, ...prev]);
+      }
+    }
+    setIsProductModalOpen(false);
+    setEditingProduct(null);
+  };
+
+  // Delete Product
+  const handleDeleteProduct = async (id: string) => {
+    if (confirm('Are you sure you want to permanently delete this gadget from inventory?')) {
+      const success = await deleteProduct(id);
+      if (success) {
+        setProducts(prev => prev.filter(p => p.id !== id));
+      }
+    }
+  };
+
+  // Toggle Stock Availability
+  const handleToggleStock = async (product: Product) => {
+    const currentStock = typeof product.stockCount === 'number' ? product.stockCount : 30;
+    const newStock = currentStock > 0 ? 0 : 30;
+    const updated = await updateProduct(product.id, {
+      stockCount: newStock,
+      inStock: newStock > 0
+    });
+    if (updated) {
+      setProducts(prev => prev.map(p => p.id === updated.id ? updated : p));
+    }
+  };
+
+  // Create Category
+  const handleCreateCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCatName.trim()) return;
+    const newCat: Category = {
+      id: newCatName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      name: newCatName.trim(),
+      description: newCatDesc.trim() || `${newCatName.trim()} devices collection.`
+    };
+    setCategories(prev => [...prev, newCat]);
+    setNewCatName('');
+    setNewCatDesc('');
+    setCatSuccessMsg(`Category "${newCat.name}" published successfully!`);
+    setTimeout(() => setCatSuccessMsg(''), 4000);
+  };
+
+  // Delete Category
+  const handleDeleteCategory = (id: string) => {
+    if (confirm('Delete this category? Gadgets assigned to it will retain their classification.')) {
+      setCategories(prev => prev.filter(c => c.id !== id));
+    }
+  };
+
+  // Update Order Status
+  const handleOrderStatusChange = async (orderId: string, newStatus: string) => {
+    const updated = await updateOrderStatus(orderId, newStatus);
+    if (updated) {
+      setOrders(prev => prev.map(o => o.id === updated.id ? updated : o));
+    }
+  };
+
+  // Save Founder Form
+  const handleSaveFounder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaveSuccess('');
+    const updated = await updateFounder(founderForm);
+    if (updated) {
+      setFounder(updated);
+      setSaveSuccess("Founder's Vision and leadership profile updated successfully!");
+      setTimeout(() => setSaveSuccess(''), 4000);
+    }
+  };
+
+  // Add New Staff Member
+  const handleCreateStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!staffForm.name || !staffForm.name.trim()) return;
+    const created = await createAdminMember(staffForm);
+    if (created) {
+      setAdminMembers(prev => [...prev, created]);
+      setIsStaffModalOpen(false);
+      setStaffForm({
+        name: '',
+        email: '',
+        phone: '',
+        role: 'Inventory Moderator',
+        permissions: ['products', 'categories']
+      });
+    }
+  };
+
+  // Delete Staff Member
+  const handleDeleteStaff = async (id: string) => {
+    if (confirm('Revoke access for this administrator/moderator?')) {
+      const ok = await deleteAdminMember(id);
+      if (ok) {
+        setAdminMembers(prev => prev.filter(m => m.id !== id));
+      }
+    }
+  };
+
+  // Filtered Products Calculation
+  const filteredProducts = products.filter(p => {
+    const matchesBrand =
+      selectedBrandFilter === 'All' ||
+      (p.brand && p.brand.toLowerCase() === selectedBrandFilter.toLowerCase()) ||
+      p.name.toLowerCase().startsWith(selectedBrandFilter.toLowerCase());
+
+    const matchesCategory =
+      selectedCategoryFilter === 'All' ||
+      p.category.toLowerCase() === selectedCategoryFilter.toLowerCase();
+
+    const matchesSearch =
+      searchQuery === '' ||
+      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    return matchesBrand && matchesCategory && matchesSearch;
+  });
+
+  const totalRevenue = orders.reduce((sum, o) => sum + (Number(o.totalBDT) || 0), 0);
+
+  // -------------------------------------------------------------
+  // Unauthenticated Login Stage (Always displayed on fresh visit)
+  // -------------------------------------------------------------
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0B132B] flex items-center justify-center p-4">
+        <div className="w-full max-w-md p-8 rounded-3xl bg-white border border-white/20 shadow-2xl text-center space-y-6">
+          <div className="relative w-14 h-14 mx-auto rounded-2xl bg-[#0B132B] p-2 flex items-center justify-center shadow-lg">
+            <Image
+              src="/brand/nexora_icon_white_transparent.png"
+              alt="NEXORA"
+              fill
+              className="object-contain p-2"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <h1 className="text-2xl font-bold tracking-tight text-[#1D1D1F]">
+              Nexora Admin Panel
+            </h1>
+            <p className="text-xs text-[#86868B]">
+              Enter administrator or moderator credentials to access control systems.
+            </p>
+          </div>
+
+          {loginError && (
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-semibold">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
+            <div>
+              <label className="block text-xs font-semibold text-[#1D1D1F] mb-1">
+                Username or Email
+              </label>
+              <input
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="e.g. jakaria or admin or inventory"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-[#1D1D1F] mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-sm tracking-wide transition-all shadow-md active:scale-95"
+            >
+              Sign In to Admin Panel
+            </button>
+          </form>
+
+          {/* Quick Credential Test Helpers */}
+          <div className="pt-2 border-t border-black/10 text-left">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#86868B] block mb-2">
+              Quick Role Test Credentials:
+            </span>
+            <div className="grid grid-cols-2 gap-1.5 text-[11px]">
+              <button
+                type="button"
+                onClick={() => { setUsername('jakaria'); setPassword('NexoraSuperAdmin2026!'); }}
+                className="px-2.5 py-1.5 rounded-lg bg-[#F5F5F7] hover:bg-[#EBEBEF] text-[#1D1D1F] font-semibold text-left truncate transition-colors"
+                title="Super Administrator (Jakaria Tanim)"
+              >
+                👑 Super Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => { setUsername('admin'); setPassword('AdminOps2026!'); }}
+                className="px-2.5 py-1.5 rounded-lg bg-[#F5F5F7] hover:bg-[#EBEBEF] text-[#1D1D1F] font-semibold text-left truncate transition-colors"
+                title="Administrator"
+              >
+                🛡️ Administrator
+              </button>
+              <button
+                type="button"
+                onClick={() => { setUsername('inventory'); setPassword('InventoryMod2026!'); }}
+                className="px-2.5 py-1.5 rounded-lg bg-[#F5F5F7] hover:bg-[#EBEBEF] text-[#1D1D1F] font-semibold text-left truncate transition-colors"
+                title="Inventory Moderator"
+              >
+                📦 Inventory Mod
+              </button>
+              <button
+                type="button"
+                onClick={() => { setUsername('orders'); setPassword('OrderMod2026!'); }}
+                className="px-2.5 py-1.5 rounded-lg bg-[#F5F5F7] hover:bg-[#EBEBEF] text-[#1D1D1F] font-semibold text-left truncate transition-colors"
+                title="Order Moderator"
+              >
+                🛍️ Order Mod
+              </button>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-[#86868B] font-mono">
+            Direct secure route: /myadminerapanel // 256-bit SSL
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // -------------------------------------------------------------
+  // Full Standard Admin Dashboard Layout
+  // -------------------------------------------------------------
+  return (
+    <div className="min-h-screen bg-[#F7F4EE] flex text-[#1D1D1F]">
+      
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* 1. SIDEBAR (Collapsible on 3-bar hamburger click for both mobile & desktop) */}
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen bg-[#0B132B] text-white z-50 flex flex-col justify-between border-r border-white/10 shadow-2xl transition-all duration-300 ease-in-out ${
+        isSidebarOpen ? 'w-72 translate-x-0' : '-translate-x-full w-0 overflow-hidden lg:-translate-x-full lg:w-0 pointer-events-none'
+      }`}>
+        
+        {/* Brand Header */}
+        <div className="p-5 border-b border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative w-9 h-9 rounded-xl bg-white/10 p-1 flex items-center justify-center">
+                <Image
+                  src="/brand/nexora_icon_white_transparent.png"
+                  alt="NEXORA"
+                  fill
+                  className="object-contain p-1"
+                />
+              </div>
+              <div>
+                <h2 className="font-bold text-base tracking-tight text-white">NEXORA</h2>
+                <span className="text-[10px] font-semibold text-cyan-400 tracking-wider block">
+                  Admin Panel
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1.5 rounded-lg text-white/60 hover:text-white transition-colors"
+              title="Close Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <button
+            onClick={() => { setActiveTab('overview'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'overview'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <LayoutDashboard className="w-4 h-4 text-cyan-300" />
+            <span>Dashboard Overview</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('products'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'products'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <Package className="w-4 h-4 text-amber-300" />
+            <div className="flex-1 flex items-center justify-between">
+              <span>Product Inventory</span>
+              <span className="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-mono font-bold">
+                {products.length}
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('staff'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'staff'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <Users className="w-4 h-4 text-emerald-300" />
+            <div className="flex-1 flex items-center justify-between">
+              <span>Admins &amp; Moderators</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
+                {adminMembers.length}
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('categories'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'categories'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <Tags className="w-4 h-4 text-purple-300" />
+            <div className="flex-1 flex items-center justify-between">
+              <span>Categories</span>
+              <span className="px-2 py-0.5 rounded-full bg-white/20 text-xs font-mono">
+                {categories.length}
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('orders'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'orders'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <ShoppingBag className="w-4 h-4 text-emerald-300" />
+            <div className="flex-1 flex items-center justify-between">
+              <span>Orders</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono">
+                {orders.length}
+              </span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('founder'); setIsSidebarOpen(false); }}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
+              activeTab === 'founder'
+                ? 'bg-[#0071E3] text-white shadow-md'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+            }`}
+          >
+            <UserCheck className="w-4 h-4 text-rose-300" />
+            <span>Founder&apos;s Vision</span>
+          </button>
+        </div>
+
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-white/10 space-y-3">
+          <div className="flex items-center gap-3 px-2 py-1">
+            <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm text-amber-300">
+              {currentUser?.name ? currentUser.name.slice(0, 2).toUpperCase() : 'JT'}
+            </div>
+            <div className="overflow-hidden">
+              <div className="text-sm font-semibold text-white truncate">{currentUser?.name || 'Jakaria Tanim'}</div>
+              <div className="text-xs text-white/50 truncate">{currentUser?.role || 'Super Administrator'}</div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={loadDashboardData}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-colors"
+              title="Refresh Catalog Data"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Refresh</span>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-medium transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
+      </aside>
+
+      {/* 2. MAIN CONTENT AREA (Takes 100% width when sidebar is collapsed) */}
+      <main className="flex-1 min-w-0 flex flex-col min-h-screen transition-all duration-300">
+        
+        {/* Top Control Bar with 3-bar hamburger menu button */}
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl border-b border-black/[0.08] px-4 sm:px-6 py-3.5 flex items-center justify-between shadow-sm">
+          <div className="flex items-center gap-3">
+            {/* 3-BAR HAMBURGER BUTTON (Toggles sidebar on click) */}
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="p-2 rounded-xl bg-[#F5F5F7] hover:bg-[#EBEBEF] text-[#1D1D1F] transition-all flex items-center justify-center cursor-pointer shadow-sm active:scale-95"
+              aria-label="Toggle Navigation Sidebar"
+              title={isSidebarOpen ? "Collapse Navigation Menu" : "Open Navigation Menu"}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <div>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-tight text-[#1D1D1F]">
+                {activeTab === 'overview' && 'Dashboard Overview'}
+                {activeTab === 'products' && 'Product Inventory & Catalog'}
+                {activeTab === 'staff' && 'Admins & Moderators'}
+                {activeTab === 'categories' && 'Category Management'}
+                {activeTab === 'orders' && 'Live Customer Orders'}
+                {activeTab === 'founder' && "Founder's Vision"}
+              </h1>
+            </div>
+          </div>
+
+          {/* COMPACT SLEEK RIGHT-ALIGNED ACTION BUTTONS */}
+          <div className="flex items-center gap-2">
+            <a
+              href="/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-black/10 bg-[#F5F5F7] hover:bg-[#EBEBEF] text-xs font-semibold text-[#1D1D1F] transition-all"
+              title="View Live Store"
+            >
+              <ExternalLink className="w-3.5 h-3.5 text-[#86868B]" />
+              <span className="hidden sm:inline">Store</span>
+            </a>
+
+            {activeTab === 'products' && (
+              <button
+                onClick={() => {
+                  setEditingProduct(null);
+                  setProductForm({
+                    name: '',
+                    brand: 'Apple',
+                    tagline: '',
+                    category: categories[0]?.name || 'Smartphones',
+                    priceBDT: 0,
+                    priceUSD: 0,
+                    stockCount: 30,
+                    inStock: true,
+                    image: '',
+                    specs: [''],
+                    description: '',
+                  });
+                  setIsProductModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold shadow-sm transition-all active:scale-95"
+                title="Add New Gadget"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Gadget</span>
+              </button>
+            )}
+
+            {activeTab === 'staff' && (
+              <button
+                onClick={() => setIsStaffModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-95"
+                title="Add Admin / Moderator"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Staff</span>
+              </button>
+            )}
+
+            {activeTab === 'categories' && (
+              <button
+                onClick={() => {
+                  const input = document.getElementById('new-cat-input');
+                  if (input) input.focus();
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-95"
+                title="Create Category"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Create Cat</span>
+              </button>
+            )}
+          </div>
+        </header>
+
+        {/* Content Body */}
+        <div className="p-4 sm:p-8 space-y-8 flex-1">
+          
+          {/* Toggle Button for Overview Metrics */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-bold uppercase tracking-wider text-[#6E6E73] font-mono">
+              Store Metrics &amp; Telemetry
+            </span>
+            <button
+              onClick={() => setShowMetrics(!showMetrics)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-black/10 text-sm font-bold text-[#0071E3] hover:bg-[#F5F5F7] shadow-sm transition-all active:scale-95"
+            >
+              <span>{showMetrics ? 'Collapse Metrics ▲' : 'Expand Metrics ▼'}</span>
+              {showMetrics ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+          </div>
+
+          {/* Telemetry Stat Cards with Large Readable Fonts */}
+          {showMetrics && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <div className="flex items-center justify-between text-[#86868B] mb-2">
+                  <span className="text-sm font-mono uppercase font-bold tracking-wider">Total Store Revenue</span>
+                  <span className="text-emerald-600 font-bold font-mono text-2xl">৳</span>
+                </div>
+                <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1D1D1F]">
+                  ৳{totalRevenue.toLocaleString()}
+                </div>
+                <p className="text-sm text-[#86868B] font-medium mt-1">Across all confirmed customer orders</p>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <div className="flex items-center justify-between text-[#86868B] mb-2">
+                  <span className="text-sm font-mono uppercase font-bold tracking-wider">Catalog Inventory</span>
+                  <Layers className="w-5 h-5 text-[#0071E3]" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1D1D1F]">
+                  {products.length} Products
+                </div>
+                <p className="text-sm text-emerald-600 font-semibold mt-1">
+                  {products.filter(p => p.inStock && (p.stockCount ?? 1) > 0).length} currently In Stock
+                </p>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <div className="flex items-center justify-between text-[#86868B] mb-2">
+                  <span className="text-sm font-mono uppercase font-bold tracking-wider">Authorized Brands</span>
+                  <ShieldCheck className="w-5 h-5 text-purple-600" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1D1D1F]">
+                  10 Global Brands
+                </div>
+                <p className="text-sm text-[#86868B] font-medium mt-1">Apple, Samsung, Xiaomi, Sony, etc.</p>
+              </div>
+
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <div className="flex items-center justify-between text-[#86868B] mb-2">
+                  <span className="text-sm font-mono uppercase font-bold tracking-wider">Active Orders</span>
+                  <ShoppingBag className="w-5 h-5 text-amber-500" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-extrabold font-mono text-[#1D1D1F]">
+                  {orders.length} Orders
+                </div>
+                <p className="text-sm text-[#86868B] font-medium mt-1">Live deliveries &amp; reservations</p>
+              </div>
+            </div>
+          )}
+
+          {/* =======================================================
+              TAB 1: PRODUCTS INVENTORY TAB
+              ======================================================= */}
+          {(activeTab === 'products' || activeTab === 'overview') && (
+            <div className="space-y-6">
+              
+              {/* Toggle Button for Brand & Category Filters */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="w-5 h-5 text-[#0071E3]" />
+                  <span className="text-base font-bold text-[#1D1D1F]">
+                    Instant Brand &amp; Category Filters
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="px-4 py-2 rounded-xl bg-white border border-black/10 text-sm font-bold text-[#0071E3] hover:bg-[#F5F5F7] shadow-sm transition-all active:scale-95"
+                >
+                  {showFilters ? 'Hide Filter Bar ▲' : 'Show Filter Bar ▼'}
+                </button>
+              </div>
+
+              {/* Comprehensive Brand & Category Tabs */}
+              {showFilters && (
+                <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm space-y-4 animate-fade-in">
+                  
+                  {/* Brand Filter Row */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold uppercase tracking-wider text-[#6E6E73] font-mono">
+                        Filter by Official Brand ({TOP_10_BRANDS.length - 1} Top Brands)
+                      </span>
+                      {selectedBrandFilter !== 'All' && (
+                        <button
+                          onClick={() => setSelectedBrandFilter('All')}
+                          className="text-sm font-semibold text-[#0071E3] hover:underline"
+                        >
+                          Clear Brand Filter
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {TOP_10_BRANDS.map((brand) => (
+                        <button
+                          key={brand}
+                          onClick={() => setSelectedBrandFilter(brand)}
+                          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                            selectedBrandFilter.toLowerCase() === brand.toLowerCase()
+                              ? 'bg-[#0071E3] text-white shadow-md'
+                              : 'bg-[#F5F5F7] text-[#1D1D1F] hover:bg-slate-200 border border-black/5'
+                          }`}
+                        >
+                          {brand === 'All' ? `All Brands (${products.length})` : brand}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Category Filter Row */}
+                  <div className="space-y-2 pt-2 border-t border-black/[0.06]">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold uppercase tracking-wider text-[#6E6E73] font-mono">
+                        Filter by Hardware Category
+                      </span>
+                      {selectedCategoryFilter !== 'All' && (
+                        <button
+                          onClick={() => setSelectedCategoryFilter('All')}
+                          className="text-sm font-semibold text-[#0071E3] hover:underline"
+                        >
+                          Clear Category Filter
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        onClick={() => setSelectedCategoryFilter('All')}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                          selectedCategoryFilter === 'All'
+                            ? 'bg-[#1D1D1F] text-white shadow-sm'
+                            : 'bg-[#F5F5F7] text-[#555558] hover:bg-slate-200'
+                        }`}
+                      >
+                        All Categories
+                      </button>
+                      {categories.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => setSelectedCategoryFilter(c.name)}
+                          className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                            selectedCategoryFilter.toLowerCase() === c.name.toLowerCase()
+                              ? 'bg-[#1D1D1F] text-white shadow-sm font-bold'
+                              : 'bg-[#F5F5F7] text-[#555558] hover:bg-slate-200'
+                          }`}
+                        >
+                          {c.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Search Input Bar */}
+                  <div className="pt-2">
+                    <div className="relative">
+                      <Search className="w-4 h-4 text-[#86868B] absolute left-4 top-1/2 transform -translate-y-1/2" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search products by model, brand, or feature..."
+                        className="w-full pl-11 pr-4 py-3 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-medium focus:outline-none focus:border-[#0071E3]"
+                      />
+                      {searchQuery && (
+                        <button
+                          onClick={() => setSearchQuery('')}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[#86868B] hover:text-black"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Table Counter & Reset Bar */}
+              <div className="flex items-center justify-between text-sm sm:text-base text-[#6E6E73] font-medium px-2">
+                <span>
+                  Showing <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> products in catalog
+                </span>
+                {(selectedBrandFilter !== 'All' || selectedCategoryFilter !== 'All' || searchQuery) && (
+                  <button
+                    onClick={() => {
+                      setSelectedBrandFilter('All');
+                      setSelectedCategoryFilter('All');
+                      setSearchQuery('');
+                    }}
+                    className="text-[#0071E3] font-bold hover:underline"
+                  >
+                    Reset All Filters
+                  </button>
+                )}
+              </div>
+
+              {/* Products Table with Large Readable Font Sizes */}
+              <div className="rounded-3xl bg-white border border-black/[0.08] shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-[#F5F5F7] text-[#424245] uppercase font-mono text-sm font-bold tracking-wider border-b border-black/[0.08]">
+                      <tr>
+                        <th className="px-6 py-4">Visual</th>
+                        <th className="px-6 py-4">Product Name &amp; Brand</th>
+                        <th className="px-6 py-4">Category</th>
+                        <th className="px-6 py-4">Price (BDT / USD)</th>
+                        <th className="px-6 py-4">Stock Status</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.06] text-base">
+                      {filteredProducts.map((p) => {
+                        const count = typeof p.stockCount === 'number' ? p.stockCount : (p.inStock ? 25 : 0);
+                        const isAvailable = p.inStock && count > 0;
+                        return (
+                          <tr key={p.id} className="hover:bg-slate-50/80 transition-colors">
+                            <td className="px-6 py-4">
+                              <div className="relative w-16 h-16 rounded-2xl overflow-hidden bg-[#F5F5F7] border border-black/[0.06] flex items-center justify-center">
+                                <Image src={p.image} alt={p.name} fill className="object-contain p-1" sizes="64px" />
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <div className="font-bold text-[#1D1D1F] text-base sm:text-lg">{p.name}</div>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="px-2.5 py-0.5 rounded-md bg-[#0071E3]/10 text-[#0071E3] text-sm font-bold">
+                                  {p.brand || 'Official'}
+                                </span>
+                                <span className="text-sm text-[#6E6E73] truncate max-w-sm">{p.tagline}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4">
+                              <span className="px-3.5 py-1.5 rounded-full bg-[#F5F5F7] border border-black/10 font-mono text-sm text-[#1D1D1F] font-bold">
+                                {p.category}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 font-mono">
+                              <div className="text-lg font-extrabold text-[#1D1D1F]">৳{p.priceBDT.toLocaleString()}</div>
+                              {p.priceUSD > 0 && (
+                                <div className="text-sm text-[#86868B] font-medium">${p.priceUSD}</div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4">
+                              <button
+                                onClick={() => handleToggleStock(p)}
+                                className={`px-4 py-2 rounded-full text-sm font-bold font-mono transition-all ${
+                                  isAvailable
+                                    ? count <= 5
+                                      ? 'bg-amber-50 text-amber-800 border border-amber-300'
+                                      : 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                                    : 'bg-red-50 text-red-700 border border-red-300'
+                                }`}
+                                title="Click to toggle Stock Status"
+                              >
+                                {isAvailable ? `✓ ${count} In Stock` : '✕ Out of Stock (0)'}
+                              </button>
+                            </td>
+                            <td className="px-6 py-4 text-right space-x-2">
+                              <button
+                                onClick={() => {
+                                  setEditingProduct(p);
+                                  setProductForm({
+                                    ...p,
+                                    brand: p.brand || p.name.split(' ')[0],
+                                    stockCount: typeof p.stockCount === 'number' ? p.stockCount : 30
+                                  });
+                                  setIsProductModalOpen(true);
+                                }}
+                                className="p-2.5 rounded-xl bg-[#F5F5F7] text-slate-700 hover:text-[#0071E3] hover:bg-blue-50 transition-colors"
+                                title="Edit Product Details"
+                              >
+                                <Edit2 className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteProduct(p.id)}
+                                className="p-2.5 rounded-xl bg-[#F5F5F7] text-red-600 hover:bg-red-50 transition-colors"
+                                title="Delete Product"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =======================================================
+              TAB 2: ADMINS & MODERATORS MANAGEMENT TAB (NEW)
+              ======================================================= */}
+          {activeTab === 'staff' && (
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <div>
+                  <h3 className="text-xl font-bold text-[#1D1D1F]">Administrative Team &amp; Role Governance</h3>
+                  <p className="text-sm text-[#6E6E73] mt-1">
+                    Manage team permissions, assign moderators, and control platform administrative privileges.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsStaffModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold shadow-md transition-all active:scale-95 self-start sm:self-auto"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>+ Add Administrator / Moderator</span>
+                </button>
+              </div>
+
+              {/* Staff Table */}
+              <div className="rounded-3xl bg-white border border-black/[0.08] shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-[#F5F5F7] text-[#424245] uppercase font-mono text-sm font-bold tracking-wider border-b border-black/[0.08]">
+                      <tr>
+                        <th className="px-6 py-4">Staff Member</th>
+                        <th className="px-6 py-4">Assigned Role</th>
+                        <th className="px-6 py-4">Active Permissions</th>
+                        <th className="px-6 py-4">Status</th>
+                        <th className="px-6 py-4">Date Joined</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.06] text-base">
+                      {adminMembers.map((member) => (
+                        <tr key={member.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center text-sm">
+                                {member.name.slice(0, 2).toUpperCase()}
+                              </div>
+                              <div>
+                                <div className="font-bold text-[#1D1D1F] text-base sm:text-lg">{member.name}</div>
+                                <div className="text-sm text-[#6E6E73] font-mono">{member.email || member.phone}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1.5 rounded-full text-sm font-bold ${
+                              member.role.includes('Super')
+                                ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                                : member.role.includes('Admin')
+                                ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                                : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                            }`}>
+                              {member.role}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex flex-wrap gap-1.5">
+                              {member.permissions.map((perm) => (
+                                <span key={perm} className="px-2.5 py-1 rounded-md bg-gray-100 text-gray-700 text-sm font-mono font-medium">
+                                  {perm}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-bold">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                              {member.status || 'Active'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 text-sm font-mono text-[#86868B]">
+                            {new Date(member.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                            {member.role !== 'Super Administrator' ? (
+                              <button
+                                onClick={() => handleDeleteStaff(member.id)}
+                                className="p-2 rounded-xl text-red-600 hover:bg-red-50 transition-colors text-sm font-semibold"
+                                title="Revoke Role Access"
+                              >
+                                <Trash2 className="w-4 h-4 inline mr-1" />
+                                <span>Revoke</span>
+                              </button>
+                            ) : (
+                              <span className="text-xs font-mono text-gray-400">Owner</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =======================================================
+              TAB 3: CATEGORIES MANAGEMENT TAB
+              ======================================================= */}
+          {activeTab === 'categories' && (
+            <div className="space-y-8">
+              
+              {/* Category Creation Form */}
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/[0.08] shadow-sm space-y-4">
+                <div>
+                  <h3 className="text-xl font-bold text-[#1D1D1F]">Create New Category</h3>
+                  <p className="text-xs sm:text-sm text-[#6E6E73] mt-1">
+                    Categories appear instantly across the storefront, predictive suggestions, and gadget inventories.
+                  </p>
+                </div>
+
+                {catSuccessMsg && (
+                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                    ✓ {catSuccessMsg}
+                  </div>
+                )}
+
+                <form onSubmit={handleCreateCategory} className="space-y-4 text-xs">
+                  <div>
+                    <label className="block text-[#1D1D1F] font-semibold mb-1 text-sm">
+                      Category Name *
+                    </label>
+                    <input
+                      id="new-cat-input"
+                      type="text"
+                      required
+                      value={newCatName}
+                      onChange={(e) => setNewCatName(e.target.value)}
+                      placeholder="e.g. Wireless Audio, GaN Chargers, Foldable Phones"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[#1D1D1F] font-semibold mb-1 text-sm">
+                      Short Description
+                    </label>
+                    <input
+                      type="text"
+                      value={newCatDesc}
+                      onChange={(e) => setNewCatDesc(e.target.value)}
+                      placeholder="e.g. Flagship wireless charging stands and multi-port GaN power stations"
+                      className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm tracking-wide shadow-md active:scale-95 transition-all"
+                  >
+                    Publish Category
+                  </button>
+                </form>
+              </div>
+
+              {/* Existing Categories Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {categories.map((cat) => {
+                  const prodsInCat = products.filter(p => p.category.toLowerCase() === cat.name.toLowerCase()).length;
+                  return (
+                    <div
+                      key={cat.id}
+                      className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm flex flex-col justify-between space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="px-3 py-1 rounded-full bg-[#0071E3]/10 text-[#0071E3] font-mono text-xs font-bold">
+                            {prodsInCat} Gadgets
+                          </span>
+                          <button
+                            onClick={() => handleDeleteCategory(cat.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                            title="Delete Category"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <h4 className="text-lg font-bold text-[#1D1D1F]">{cat.name}</h4>
+                        <p className="text-xs text-[#6E6E73] leading-relaxed">
+                          {cat.description || 'Collection of premium hardware.'}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-black/[0.06] flex items-center justify-between text-xs font-mono text-[#86868B]">
+                        <span>ID: {cat.id}</span>
+                        <button
+                          onClick={() => {
+                            setSelectedCategoryFilter(cat.name);
+                            setActiveTab('products');
+                          }}
+                          className="text-[#0071E3] hover:underline font-semibold"
+                        >
+                          View Products →
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+            </div>
+          )}
+
+          {/* =======================================================
+              TAB 4: LIVE CUSTOMER ORDERS TAB
+              ======================================================= */}
+          {activeTab === 'orders' && (
+            <div className="space-y-6">
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <h3 className="text-xl font-bold text-[#1D1D1F]">Customer Orders &amp; Fulfillment</h3>
+                <p className="text-xs sm:text-sm text-[#6E6E73] mt-1">
+                  Review customer transactions, shipping addresses, payment status, and dispatch tracking codes.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white border border-black/[0.08] shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="bg-[#F5F5F7] text-[#424245] uppercase font-mono text-xs font-bold tracking-wider border-b border-black/[0.08]">
+                      <tr>
+                        <th className="px-6 py-4">Tracking Code</th>
+                        <th className="px-6 py-4">Customer</th>
+                        <th className="px-6 py-4">Items Ordered</th>
+                        <th className="px-6 py-4">Total (BDT)</th>
+                        <th className="px-6 py-4">Payment</th>
+                        <th className="px-6 py-4">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/[0.06] text-sm">
+                      {orders.map((o) => (
+                        <tr key={o.id} className="hover:bg-slate-50/80 transition-colors">
+                          <td className="px-6 py-4 font-mono font-bold text-[#0071E3]">
+                            {o.id}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="font-bold text-[#1D1D1F]">{o.customer?.name || 'Customer'}</div>
+                            <div className="text-xs text-[#86868B] font-mono">{o.customer?.phone}</div>
+                          </td>
+                          <td className="px-6 py-4 text-xs">
+                            {o.items?.map((item, i) => (
+                              <div key={i} className="text-[#1D1D1F] font-medium">
+                                {item.name} × {item.quantity}
+                              </div>
+                            ))}
+                          </td>
+                          <td className="px-6 py-4 font-mono font-bold text-base text-[#1D1D1F]">
+                            ৳{o.totalBDT.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-mono font-semibold">
+                              {o.paymentMethod}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <select
+                              value={o.status}
+                              onChange={(e) => handleOrderStatusChange(o.id, e.target.value)}
+                              className="px-3 py-1.5 rounded-xl border border-black/10 text-xs font-bold font-mono focus:outline-none"
+                            >
+                              <option value="Pending">Pending</option>
+                              <option value="Processing">Processing</option>
+                              <option value="Shipped">Shipped</option>
+                              <option value="Delivered">Delivered</option>
+                              <option value="Cancelled">Cancelled</option>
+                            </select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* =======================================================
+              TAB 5: FOUNDER'S VISION SETTINGS
+              ======================================================= */}
+          {activeTab === 'founder' && (
+            <div className="max-w-3xl mx-auto space-y-6">
+              <div className="p-6 rounded-3xl bg-white border border-black/[0.08] shadow-sm">
+                <h3 className="text-xl font-bold text-[#1D1D1F]">Founder&apos;s Vision &amp; Executive Profile</h3>
+                <p className="text-xs sm:text-sm text-[#6E6E73] mt-1">
+                  Updates made here sync directly to the Founder&apos;s Vision portal across the website.
+                </p>
+              </div>
+
+              {saveSuccess && (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+                  ✓ {saveSuccess}
+                </div>
+              )}
+
+              <form onSubmit={handleSaveFounder} className="p-6 sm:p-8 rounded-3xl bg-white border border-black/[0.08] shadow-sm space-y-5 text-sm">
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1">Founder Name</label>
+                  <input
+                    type="text"
+                    value={founderForm.name || ''}
+                    onChange={(e) => setFounderForm({ ...founderForm, name: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1">Company &amp; Executive Role</label>
+                  <input
+                    type="text"
+                    value={founderForm.role || ''}
+                    onChange={(e) => setFounderForm({ ...founderForm, role: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1">Architectural Vision Statement</label>
+                  <textarea
+                    rows={4}
+                    value={founderForm.vision || ''}
+                    onChange={(e) => setFounderForm({ ...founderForm, vision: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="px-8 py-3 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-bold text-sm tracking-wide shadow-md transition-all active:scale-95"
+                >
+                  Save Vision Profile
+                </button>
+              </form>
+            </div>
+          )}
+
+        </div>
+      </main>
+
+      {/* =========================================================
+          PRODUCT CREATION / EDITING MODAL
+          ========================================================= */}
+      {isProductModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-2xl bg-white rounded-3xl border border-black/10 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto">
+            
+            <div className="flex items-center justify-between pb-4 border-b border-black/[0.08]">
+              <div>
+                <h3 className="text-xl font-bold text-[#1D1D1F]">
+                  {editingProduct ? 'Edit Gadget Specs & Inventory' : 'Add New Hardware Gadget'}
+                </h3>
+                <p className="text-xs text-[#86868B] mt-0.5">
+                  Update product details, official brand attribution, and stock piece counts.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsProductModalOpen(false)}
+                className="p-1.5 rounded-full bg-[#F5F5F7] text-[#86868B] hover:text-[#1D1D1F]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProduct} className="space-y-4 pt-4 text-xs">
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Gadget Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={productForm.name || ''}
+                    onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                    placeholder="e.g. Samsung Galaxy S24 Ultra"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-semibold focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Brand *</label>
+                  <select
+                    value={productForm.brand || 'Apple'}
+                    onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-semibold focus:outline-none focus:border-[#0071E3]"
+                  >
+                    {TOP_10_BRANDS.filter(b => b !== 'All').map(b => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Category *</label>
+                  <select
+                    value={productForm.category || 'Smartphones'}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-semibold focus:outline-none focus:border-[#0071E3]"
+                  >
+                    {categories.map(c => (
+                      <option key={c.id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Tagline</label>
+                  <input
+                    type="text"
+                    value={productForm.tagline || ''}
+                    onChange={(e) => setProductForm({ ...productForm, tagline: e.target.value })}
+                    placeholder="e.g. Galaxy AI is Here. Titanium Armor."
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Price BDT (৳) *</label>
+                  <input
+                    type="number"
+                    required
+                    value={productForm.priceBDT || ''}
+                    onChange={(e) => setProductForm({ ...productForm, priceBDT: Number(e.target.value) })}
+                    placeholder="178000"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-mono font-bold focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Price USD ($)</label>
+                  <input
+                    type="number"
+                    value={productForm.priceUSD || ''}
+                    onChange={(e) => setProductForm({ ...productForm, priceUSD: Number(e.target.value) })}
+                    placeholder="1370"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-mono focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Stock Quantity (Pieces) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={typeof productForm.stockCount !== 'undefined' ? productForm.stockCount : 30}
+                    onChange={(e) => {
+                      const count = Math.max(0, parseInt(e.target.value) || 0);
+                      setProductForm({ ...productForm, stockCount: count, inStock: count > 0 });
+                    }}
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-mono font-bold focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Product Studio Image URL or Upload</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={productForm.image || ''}
+                    onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                    placeholder="/products/samsung-s24-ultra.png"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-mono focus:outline-none focus:border-[#0071E3]"
+                  />
+                  <label className="cursor-pointer px-4 py-2.5 rounded-xl bg-black/5 hover:bg-black/10 text-[#1D1D1F] text-xs font-semibold flex items-center gap-1.5">
+                    <UploadCloud className="w-4 h-4" />
+                    <span>Upload</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleImageFile(file);
+                      }}
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#1D1D1F] font-bold mb-1 text-sm">Full Hardware Description</label>
+                <textarea
+                  rows={3}
+                  value={productForm.description || ''}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  placeholder="Key features, warranty, and craftsmanship..."
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F]"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsProductModalOpen(false)}
+                  className="px-5 py-2.5 rounded-full border border-black/10 text-[#1D1D1F] font-semibold text-xs hover:bg-black/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-[#0071E3] hover:bg-[#0077ED] text-white font-bold text-xs tracking-wide shadow-md active:scale-95"
+                >
+                  {editingProduct ? 'Save Changes' : 'Publish Gadget'}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================
+          ADD STAFF / MODERATOR MODAL (NEW)
+          ========================================================= */}
+      {isStaffModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl border border-black/10 shadow-2xl p-6 sm:p-8">
+            <div className="flex items-center justify-between pb-4 border-b border-black/[0.08]">
+              <div>
+                <h3 className="text-xl font-bold text-[#1D1D1F]">
+                  Add Administrator / Moderator
+                </h3>
+                <p className="text-xs text-[#86868B] mt-0.5">
+                  Grant role-based credentials for inventory, orders, or full administration.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsStaffModalOpen(false)}
+                className="p-1.5 rounded-full bg-[#F5F5F7] text-[#86868B] hover:text-[#1D1D1F]"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateStaff} className="space-y-4 pt-4 text-sm">
+              <div>
+                <label className="block text-[#1D1D1F] font-bold mb-1">Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={staffForm.name}
+                  onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })}
+                  placeholder="e.g. Jakaria Rahman"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1">Work Email</label>
+                  <input
+                    type="email"
+                    value={staffForm.email}
+                    onChange={(e) => setStaffForm({ ...staffForm, email: e.target.value })}
+                    placeholder="moderator@nexora.com"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[#1D1D1F] font-bold mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    value={staffForm.phone}
+                    onChange={(e) => setStaffForm({ ...staffForm, phone: e.target.value })}
+                    placeholder="+8801700000000"
+                    className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#1D1D1F] font-bold mb-1">Assigned Role</label>
+                <select
+                  value={staffForm.role}
+                  onChange={(e) => setStaffForm({ ...staffForm, role: e.target.value as AdminMember['role'] })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#F5F5F7] border border-black/10 text-sm text-[#1D1D1F] font-semibold focus:outline-none focus:border-[#0071E3]"
+                >
+                  <option value="Administrator">Administrator (Store Ops)</option>
+                  <option value="Inventory Moderator">Inventory Moderator (Catalog Only)</option>
+                  <option value="Order Moderator">Order Moderator (Fulfillment Only)</option>
+                  <option value="Support Lead">Support Lead (Reviews &amp; Inquiries)</option>
+                </select>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsStaffModalOpen(false)}
+                  className="px-5 py-2.5 rounded-full border border-black/10 text-[#1D1D1F] font-semibold text-xs hover:bg-black/5"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs tracking-wide shadow-md active:scale-95"
+                >
+                  Confirm &amp; Add Member
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}

@@ -1,0 +1,164 @@
+[
+  {
+    "id": "NX-2026-5775",
+    "customer": {
+      "name": "Audit Security Tester",
+      "phone": "+8801700000000",
+      "email": "audit@nexora.com",
+      "address": "Banani, Dhaka",
+      "city": "Dhaka",
+      "deliveryZone": "dhaka",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "iphone-18-pro-max",
+        "name": "Apple iPhone 18 Pro Max",
+        "priceBDT": 215000,
+        "priceUSD": 1599,
+        "quantity": 1,
+        "image": "/products/iphone-18-pro-max.png",
+        "selectedColor": "Default",
+        "selectedStorage": "Standard"
+      }
+    ],
+    "subtotalBDT": 215000,
+    "deliveryFeeBDT": 70,
+    "discountBDT": 0,
+    "couponCode": "",
+    "totalBDT": 215070,
+    "paymentMethod": "Cash on Delivery",
+    "transactionId": "PENDING",
+    "status": "Pending",
+    "createdAt": "2026-11-18T16:10:07.033Z",
+    "updatedAt": "2026-11-18T16:10:07.033Z"
+  },
+  {
+    "id": "NX-2026-2207",
+    "customer": {
+      "name": "Audit Security Tester",
+      "phone": "+8801700000000",
+      "email": "audit@nexora.com",
+      "address": "Banani, Dhaka",
+      "city": "Dhaka",
+      "deliveryZone": "dhaka",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "iphone-18-pro-max",
+        "name": "Apple iPhone 18 Pro Max",
+        "priceBDT": 215000,
+        "priceUSD": 1599,
+        "quantity": 1,
+        "image": "/products/iphone-18-pro-max.png",
+        "selectedColor": "Default",
+        "selectedStorage": "Standard"
+      }
+    ],
+    "subtotalBDT": 215000,
+    "deliveryFeeBDT": 70,
+    "discountBDT": 0,
+    "couponCode": "",
+    "totalBDT": 215070,
+    "paymentMethod": "Cash on Delivery",
+    "transactionId": "PENDING",
+    "status": "Pending",
+    "createdAt": "2026-11-18T16:02:27.788Z",
+    "updatedAt": "2026-11-18T16:02:27.788Z"
+  },
+  {
+    "id": "NX-2026-3435",
+    "customer": {
+      "name": "asif",
+      "phone": "01564586545",
+      "email": "",
+      "address": "[Home] f",
+      "city": "Dhaka",
+      "notes": ""
+    },
+    "items": [
+      {
+        "id": "apple-iphone-16-pro-max",
+        "name": "Apple iPhone 16 Pro Max",
+        "priceBDT": 195000,
+        "quantity": 1
+      }
+    ],
+    "totalBDT": 195120,
+    "paymentMethod": "Cash on Delivery",
+    "transactionId": "COD-VERIFIED",
+    "status": "Delivered",
+    "createdAt": "2026-11-18T10:41:48.371Z",
+    "updatedAt": "2026-11-18T10:44:26.237Z"
+  },
+  {
+    "id": "NX-2026-5802",
+    "customer": {
+      "email": "support@nexora.com",
+      "name": "Jakaria Tanim Test",
+      "phone": "+8801640026177",
+      "address": "Banani, Dhaka"
+    },
+    "items": [
+      {
+        "priceBDT": 18500,
+        "quantity": 1,
+        "name": "NEXORA Cyber Earbuds Pro",
+        "id": "nx-cyber-earbuds"
+      }
+    ],
+    "totalBDT": 18620,
+    "paymentMethod": "bKash",
+    "transactionId": "BKTEST991",
+    "status": "Pending",
+    "createdAt": "2026-11-16T13:34:31.647Z",
+    "updatedAt": "2026-11-16T13:34:31.647Z"
+  },
+  {
+    "id": "NX-2026-8812",
+    "customer": {
+      "name": "Tanvir Ahmed",
+      "phone": "+8801712345678",
+      "email": "tanvir@example.com",
+      "address": "Gulshan 2, Road 45, Dhaka, Bangladesh"
+    },
+    "items": [
+      {
+        "id": "nx-cyber-earbuds",
+        "name": "NEXORA Cyber Earbuds Pro",
+        "priceBDT": 18500,
+        "quantity": 1
+      }
+    ],
+    "totalBDT": 18500,
+    "paymentMethod": "bKash",
+    "transactionId": "BK9X82LA71",
+    "status": "Processing",
+    "createdAt": "2026-11-16T14:30:00.000Z",
+    "updatedAt": "2026-11-16T15:10:00.000Z"
+  },
+  {
+    "id": "NX-2026-5431",
+    "customer": {
+      "name": "Sabbir Hossain",
+      "phone": "+8801898765432",
+      "email": "sabbir@example.com",
+      "address": "Dhanmondi 9/A, Dhaka, Bangladesh"
+    },
+    "items": [
+      {
+        "id": "nx-neural-ring",
+        "name": "NEXORA Neural Smart Ring",
+        "priceBDT": 24500,
+        "quantity": 1
+      }
+    ],
+    "totalBDT": 24500,
+    "paymentMethod": "Cash on Delivery",
+    "transactionId": "COD-VERIFIED",
+    "status": "Shipped",
+    "createdAt": "2026-11-15T10:00:00.000Z",
+    "updatedAt": "2026-11-16T09:20:00.000Z"
+  }
+]

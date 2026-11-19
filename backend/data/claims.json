@@ -1,0 +1,44 @@
+[
+  {
+    "id": "RMA-327364",
+    "orderId": "NX-2026-5802",
+    "customerName": "Jakaria Tanim",
+    "customerPhone": "01712345678",
+    "issueType": "Hardware Defect / Malfunction",
+    "description": "Left earbud does not charge when placed into the magnetic dock. Tested with official Anker cube charger.",
+    "status": "Under Review",
+    "createdAt": "2026-11-18T14:51:33.666Z"
+  },
+  {
+    "id": "RMA-184069",
+    "orderId": "NX-2026-8812",
+    "customerName": "Tanvir Ahmed",
+    "customerPhone": "01712345678",
+    "issueType": "Battery or Fast Charging Irregularity",
+    "description": "Battery drops rapidly within 2 hours of use after reaching 100% full charge.",
+    "status": "Under Review",
+    "createdAt": "2026-11-18T14:47:59.389Z"
+  },
+  {
+    "id": "RMA-312101",
+    "orderId": "hd",
+    "customerName": "xnx",
+    "customerPhone": "124136",
+    "issueType": "Battery or Fast Charging Irregularity",
+    "description": "fngfxgx",
+    "status": "Resolved",
+    "createdAt": "2026-11-18T11:08:09.205Z",
+    "updatedAt": "2026-11-18T12:34:25.558Z"
+  },
+  {
+    "id": "RMA-2026-901",
+    "orderId": "NX-2026-8812",
+    "customerName": "Tanvir Ahmed",
+    "customerPhone": "+8801712345678",
+    "issueType": "Audio Sync Calibration",
+    "description": "Right earbud pairing delay during initial iPhone connection. Requesting technical check under 7-day guarantee.",
+    "status": "Replacement Dispatched",
+    "createdAt": "2026-11-17T10:30:00.000Z",
+    "updatedAt": "2026-11-18T12:34:20.535Z"
+  }
+]

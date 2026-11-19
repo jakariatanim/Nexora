@@ -1,0 +1,55 @@
+[
+  {
+    "id": "usr-1",
+    "name": "Tanvir Ahmed",
+    "phone": "+8801712345678",
+    "email": "tanvir@example.com",
+    "password": "user123",
+    "registeredAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "usr-1794998377727",
+    "name": "Apple ID Client",
+    "email": "apple.id@icloud.com",
+    "phone": "",
+    "provider": "apple",
+    "tier": "NEXORA Elite Member",
+    "registeredAt": "2026-11-18T10:39:37.727Z"
+  },
+  {
+    "id": "usr-1794998383311",
+    "name": "Google Verified Member",
+    "email": "google.user@gmail.com",
+    "phone": "",
+    "provider": "google",
+    "tier": "NEXORA Elite Member",
+    "registeredAt": "2026-11-18T10:39:43.311Z"
+  },
+  {
+    "id": "usr-1794998429075",
+    "name": "asif",
+    "email": "",
+    "phone": "01564586545",
+    "password": "555555",
+    "tier": "NEXORA Elite Member",
+    "registeredAt": "2026-11-18T10:40:29.075Z"
+  },
+  {
+    "id": "usr-1795009038100",
+    "name": "Jakaria Tanim",
+    "email": "tanim@nexora.com",
+    "phone": "",
+    "provider": "google",
+    "tier": "NEXORA Elite Member",
+    "registeredAt": "2026-11-18T13:37:18.100Z"
+  },
+  {
+    "id": "usr-1795009947896",
+    "name": "Jakaria Tanim",
+    "email": "jakaria.tanim@gmail.com",
+    "phone": "",
+    "provider": "google",
+    "tier": "NEXORA Elite Member",
+    "registeredAt": "2026-11-18T13:52:27.896Z"
+  }
+]

@@ -1,0 +1,94 @@
+[
+  {
+    "id": "adm-001",
+    "name": "Jakaria Tanim",
+    "username": "jakaria",
+    "email": "tanim@nexora.com",
+    "password": "$2b$10$737ObFQeTxPCBKQTRggBjOfO.AY6JuARQTigHsX.xEkiuDuyhAX7u",
+    "phone": "+8801700000001",
+    "role": "Super Administrator",
+    "permissions": [
+      "all"
+    ],
+    "status": "Active",
+    "createdAt": "2026-11-01T10:00:00Z"
+  },
+  {
+    "id": "adm-002",
+    "name": "Nexora Enterprise Admin",
+    "username": "admin",
+    "email": "support@nexora.com",
+    "password": "$2b$10$SSk19yStO.9uNizRgm5LKu64mzSUP7YVsL/MwEm.W9Ae5UeSZ2rGW",
+    "phone": "+8801700000002",
+    "role": "Administrator",
+    "permissions": [
+      "products",
+      "orders",
+      "categories",
+      "reviews"
+    ],
+    "status": "Active",
+    "createdAt": "2026-11-05T12:00:00Z"
+  },
+  {
+    "id": "adm-003",
+    "name": "Catalog Moderator",
+    "username": "inventory",
+    "email": "catalog@nexora.com",
+    "password": "$2b$10$JmZe0t03PD7bn/66QZp8dOflk4DPNA.rMDMwz.P1eL8ZPQjUBOoIK",
+    "phone": "+8801700000003",
+    "role": "Inventory Moderator",
+    "permissions": [
+      "products",
+      "categories"
+    ],
+    "status": "Active",
+    "createdAt": "2026-11-10T14:30:00Z"
+  },
+  {
+    "id": "adm-004",
+    "name": "Order Fulfillment Lead",
+    "username": "orders",
+    "email": "orders@nexora.com",
+    "password": "OrderMod2026!",
+    "phone": "+8801700000004",
+    "role": "Order Moderator",
+    "permissions": [
+      "orders"
+    ],
+    "status": "Active",
+    "createdAt": "2026-11-12T09:15:00Z"
+  },
+  {
+    "id": "adm-1794921095182",
+    "name": "fj",
+    "username": "fxjx",
+    "email": "f@xnexora.com",
+    "password": "NexoraStaff2026!",
+    "phone": "+880 1700-000000",
+    "role": "Administrator",
+    "permissions": [
+      "products",
+      "orders",
+      "categories",
+      "reviews"
+    ],
+    "status": "Active",
+    "createdAt": "2026-11-17T13:11:35.182Z"
+  },
+  {
+    "id": "adm-1794927509443",
+    "name": "hds",
+    "username": "hds",
+    "email": "hds@gmail.com",
+    "password": "PendingActivation2026!",
+    "phone": "+880 1700-000000",
+    "role": "Inventory Moderator",
+    "permissions": [
+      "products",
+      "categories"
+    ],
+    "status": "Pending Activation",
+    "createdAt": "2026-11-17T14:58:29.443Z"
+  }
+]
