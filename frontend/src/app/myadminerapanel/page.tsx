@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
+import { TurnstileWidget } from '../../components/TurnstileWidget';
 import { Product, Order, Founder, Category, AdminMember, Review, Coupon, Claim } from '../../lib/types';
 import {
   fetchProducts,
@@ -116,6 +117,7 @@ export default function AdminEraPanel() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [inviteDetected, setInviteDetected] = useState<{ code?: string; role?: string; user?: string } | null>(null);
 
   // Active Navigation Tab (Includes Products, Orders, Staff, Categories, RMA Claims, Notifications, Coupons, Reviews, Founder)
@@ -1104,6 +1106,8 @@ export default function AdminEraPanel() {
                 className="w-full px-4 py-3 rounded-xl bg-[#F5F5F7] border border-black/10 text-base text-[#1D1D1F] focus:outline-none focus:border-[#0071E3]"
               />
             </div>
+
+            <TurnstileWidget onVerify={(token) => setTurnstileToken(token)} />
 
             <button
               type="submit"

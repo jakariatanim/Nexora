@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { TurnstileWidget } from '../../components/TurnstileWidget';
 import { useCart } from '../../lib/cartContext';
 import { createOrder, validateCoupon } from '../../lib/api';
 import { 
@@ -44,6 +45,7 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState<'bKash' | 'Nagad' | 'Cash on Delivery' | 'Bank Transfer' | 'Credit/Debit Card'>('bKash');
   const [transactionId, setTransactionId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
   const [orderConfirmed, setOrderConfirmed] = useState<any | null>(null);
   const [showInvoice, setShowInvoice] = useState(false);
 
@@ -642,6 +644,9 @@ export default function CheckoutPage() {
                 </span>
               </div>
             </div>
+
+            {/* Cloudflare Turnstile Bot Protection */}
+            <TurnstileWidget onVerify={(token) => setTurnstileToken(token)} />
 
             <button
               type="submit"

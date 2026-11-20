@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { TurnstileWidget } from './TurnstileWidget';
 import { useCart } from '../lib/cartContext';
 import { 
   loginCustomer, 
@@ -42,6 +43,7 @@ export const AuthModal: React.FC = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   // Customer Hub State
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
@@ -584,6 +586,9 @@ export const AuthModal: React.FC = () => {
                   Keep me signed in on this device
                 </label>
               </div>
+
+              {/* Cloudflare Turnstile Human Verification */}
+              <TurnstileWidget onVerify={(token) => setTurnstileToken(token)} />
 
               {/* Submit CTA */}
               <button
