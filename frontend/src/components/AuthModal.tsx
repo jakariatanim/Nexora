@@ -87,6 +87,52 @@ export const AuthModal: React.FC = () => {
     }
   }, [user, isAuthModalOpen]);
 
+  // Google OAuth Listener (Detects token on return or from popup window)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Check URL hash for id_token
+    if (window.location.hash) {
+      try {
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const idToken = params.get('id_token');
+        if (idToken) {
+          const payloadBase64 = idToken.split('.')[1];
+          const decoded = JSON.parse(atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/')));
+          const googleUser: User = {
+            id: 'usr-g-' + (decoded.sub || Date.now()),
+            name: decoded.name || decoded.email.split('@')[0],
+            email: decoded.email,
+            phone: '',
+            tier: 'NEXORA Verified Member'
+          };
+          setUser(googleUser);
+          localStorage.setItem('nexora_user', JSON.stringify(googleUser));
+          window.history.replaceState(null, '', window.location.pathname);
+          setIsAuthModalOpen(false);
+
+          if (window.opener) {
+            window.opener.postMessage({ type: 'NEXORA_GOOGLE_AUTH_SUCCESS', user: googleUser }, '*');
+            window.close();
+          }
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+
+    const handleAuthMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'NEXORA_GOOGLE_AUTH_SUCCESS' && event.data.user) {
+        setUser(event.data.user);
+        localStorage.setItem('nexora_user', JSON.stringify(event.data.user));
+        setIsAuthModalOpen(false);
+      }
+    };
+    window.addEventListener('message', handleAuthMessage);
+    return () => window.removeEventListener('message', handleAuthMessage);
+  }, [setUser, setIsAuthModalOpen]);
+
   if (!isAuthModalOpen) return null;
 
   // 1. Mobile OTP Handlers
@@ -207,23 +253,19 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // 4. Google OAuth Action with Dynamic Fallback
+  // 4. Official Google OAuth 2.0 Web Client Action
   const handleGoogleAuth = () => {
-    const configuredKey = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    const isRealGoogleKey = configuredKey && !configuredKey.includes('nexora.apps') && configuredKey.endsWith('.apps.googleusercontent.com');
-
-    if (isRealGoogleKey) {
-      const redirectUri = typeof window !== 'undefined' ? window.location.origin : '';
-      const scope = encodeURIComponent('openid profile email');
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${configuredKey}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token%20id_token&scope=${scope}&prompt=select_account`;
-      const width = 500;
-      const height = 620;
-      const left = typeof window !== 'undefined' ? window.screen.width / 2 - width / 2 : 100;
-      const top = typeof window !== 'undefined' ? window.screen.height / 2 - height / 2 : 100;
-      window.open(authUrl, 'GoogleOAuthSignIn', `width=${width},height=${height},top=${top},left=${left}`);
-    } else {
-      setShowGooglePrompt(true);
-    }
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '606883061125-qt9d6p7t3r9cpt1qtip83bpc21ofhd3t.apps.googleusercontent.com';
+    const redirectUri = typeof window !== 'undefined' ? window.location.origin : '';
+    const scope = encodeURIComponent('openid profile email');
+    const nonce = Date.now().toString();
+    const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token%20id_token&scope=${scope}&prompt=select_account&nonce=${nonce}`;
+    const width = 500;
+    const height = 620;
+    const left = typeof window !== 'undefined' ? window.screen.width / 2 - width / 2 : 100;
+    const top = typeof window !== 'undefined' ? window.screen.height / 2 - height / 2 : 100;
+    
+    window.open(authUrl, 'GoogleOAuthSignIn', `width=${width},height=${height},top=${top},left=${left}`);
   };
 
   const handleGoogleSubmit = (e: React.FormEvent) => {
