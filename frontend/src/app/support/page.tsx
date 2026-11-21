@@ -18,6 +18,7 @@ import {
   CheckCircle2,
   ArrowLeft
 } from 'lucide-react';
+import { getConciergeAIResponse } from '@/lib/conciergeAI';
 
 interface ChatMessage {
   id: string;
@@ -219,41 +220,13 @@ export default function DedicatedSupportPage() {
     setShowInquiries(false);
 
     setTimeout(() => {
-      const q = query.toLowerCase();
-      let replyText = '';
-      let replyLinks: { label: string; href: string }[] | undefined = undefined;
-
-      if (q.includes('track') || q.includes('order') || q.includes('status') || q.includes('ট্র্যাক')) {
-        replyText = lang === 'en'
-          ? 'You can monitor your order dispatch and transit live on our satellite tracking portal using your Order ID or phone number.'
-          : 'আপনার অর্ডারের বর্তমান অবস্থা লাইভ ট্র্যাক করতে আমাদের অর্ডার ট্র্যাকার ব্যবহার করুন।';
-        replyLinks = [{ label: lang === 'en' ? 'Track Order Live' : 'অর্ডার ট্র্যাক করুন', href: '/track-order' }];
-      } else if (q.includes('deliver') || q.includes('shipping') || q.includes('charge') || q.includes('ডেলিভারি')) {
-        replyText = lang === 'en'
-          ? 'We dispatch across Bangladesh:\n• Dhaka Metro: ৳70 (Within 24 Hours)\n• Greater Dhaka: ৳100\n• Nationwide: ৳140 (24-48 Hours)\n\nCash on delivery is fully supported.'
-          : 'ডেলিভারি চার্জ: ঢাকা মেট্রো ৭০৳ (২৪ ঘণ্টা), গ্রেটার ঢাকা ১০০৳, সারা বাংলাদেশ ১৪০৳ (২৪-৪৮ ঘণ্টা)।';
-        replyLinks = [{ label: lang === 'en' ? 'Explore Devices' : 'ক্যাটালগ দেখুন', href: '/explore' }];
-      } else if (q.includes('warrant') || q.includes('rma') || q.includes('replace') || q.includes('ওয়ারেন্টি')) {
-        replyText = lang === 'en'
-          ? 'All hardware comes with a 1-Year Official Warranty and 7-Day Instant Replacement Guarantee (RMA).'
-          : 'প্রতিটি গ্যাজেটে পাবেন ১ বছরের অফিসিয়াল ওয়্যারেন্টি এবং ৭ দিনের রিপ্লেসমেন্ট সুবিধা।';
-        replyLinks = [{ label: lang === 'en' ? 'Warranty Portal' : 'ওয়ারেন্টি পোর্টাল', href: '/warranty-claim' }];
-      } else if (q.includes('pay') || q.includes('cod') || q.includes('bkash') || q.includes('পেমেন্ট')) {
-        replyText = lang === 'en'
-          ? 'We accept Cash on Delivery (COD), bKash, Nagad, Visa, Mastercard, and Bank Wire Transfer with zero extra fees.'
-          : 'আমরা ক্যাশ অন ডেলিভারি (COD), বিকাশ, নগদ ও কার্ড পেমেন্ট গ্রহণ করি।';
-        replyLinks = [{ label: lang === 'en' ? 'Checkout' : 'চেকআউট', href: '/checkout' }];
-      } else {
-        replyText = lang === 'en'
-          ? 'Thank you for contacting us! Our dedicated hardware specialists are available to answer your custom requirements.'
-          : 'যোগাযোগের জন্য ধন্যবাদ! আপনার প্রশ্নের উত্তর দিতে আমাদের প্রতিনিধি প্রস্তুত রয়েছে।';
-      }
+      const response = getConciergeAIResponse(query, lang);
 
       const conciergeMsg: ChatMessage = {
         id: `concierge-${Date.now()}`,
         sender: 'concierge',
-        text: replyText,
-        links: replyLinks,
+        text: response.text,
+        links: response.links,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
