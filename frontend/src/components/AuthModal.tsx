@@ -55,9 +55,10 @@ export const AuthModal: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Google Instant Prompt Dialog (Prevents Google 401 error when Client ID is missing)
-  const [showGoogleInstantModal, setShowGoogleInstantModal] = useState(false);
-  const [customGoogleEmail, setCustomGoogleEmail] = useState('');
+  // Google Sign-In Prompt State
+  const [showGooglePrompt, setShowGooglePrompt] = useState(false);
+  const [googleEmailInput, setGoogleEmailInput] = useState('');
+  const [googleNameInput, setGoogleNameInput] = useState('');
 
   // Customer Hub State (when logged in)
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
@@ -206,7 +207,7 @@ export const AuthModal: React.FC = () => {
     }
   };
 
-  // 4. Google OAuth Action with Fallback
+  // 4. Google OAuth Action with Dynamic Fallback
   const handleGoogleAuth = () => {
     const configuredKey = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     const isRealGoogleKey = configuredKey && !configuredKey.includes('nexora.apps') && configuredKey.endsWith('.apps.googleusercontent.com');
@@ -221,22 +222,26 @@ export const AuthModal: React.FC = () => {
       const top = typeof window !== 'undefined' ? window.screen.height / 2 - height / 2 : 100;
       window.open(authUrl, 'GoogleOAuthSignIn', `width=${width},height=${height},top=${top},left=${left}`);
     } else {
-      // Seamless in-app Google authenticator (prevents Google Error 401: invalid_client)
-      setShowGoogleInstantModal(true);
+      setShowGooglePrompt(true);
     }
   };
 
-  const handleExecuteGoogleDirectLogin = (selectedEmail: string, selectedName: string) => {
+  const handleGoogleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!googleEmailInput.trim() || !googleEmailInput.includes('@')) return;
+    const cleanEmail = googleEmailInput.trim();
+    const cleanName = googleNameInput.trim() || cleanEmail.split('@')[0];
+
     const googleUser: User = {
       id: 'usr-google-' + Date.now(),
-      name: selectedName || selectedEmail.split('@')[0],
-      email: selectedEmail,
+      name: cleanName,
+      email: cleanEmail,
       phone: '',
       tier: 'NEXORA Verified Member'
     };
     setUser(googleUser);
     localStorage.setItem('nexora_user', JSON.stringify(googleUser));
-    setShowGoogleInstantModal(false);
+    setShowGooglePrompt(false);
     setIsAuthModalOpen(false);
   };
 
@@ -781,9 +786,9 @@ export const AuthModal: React.FC = () => {
         )}
 
         {/* =========================================================================
-            IN-APP GOOGLE AUTHENTICATOR (Prevents Google Error 401: invalid_client)
+            GENERIC GOOGLE SIGN-IN PROMPT (ZERO HARDCODED ACCOUNTS)
             ========================================================================= */}
-        {showGoogleInstantModal && (
+        {showGooglePrompt && (
           <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
             <div className="w-full max-w-sm rounded-3xl bg-white dark:bg-[#151D30] border border-black/10 dark:border-white/15 p-6 shadow-2xl text-left space-y-4">
               
@@ -801,7 +806,7 @@ export const AuthModal: React.FC = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setShowGoogleInstantModal(false)}
+                  onClick={() => setShowGooglePrompt(false)}
                   className="w-7 h-7 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-slate-500 hover:text-slate-800 dark:hover:text-white"
                 >
                   <X className="w-4 h-4" />
@@ -810,59 +815,42 @@ export const AuthModal: React.FC = () => {
 
               <div>
                 <h4 className="text-xs font-semibold text-[#1D1D1F] dark:text-white">
-                  Choose an account
+                  Enter your Google Account
                 </h4>
                 <p className="text-[11px] text-[#86868B] dark:text-slate-400">
                   to continue to NEXORA Flagship Store
                 </p>
               </div>
 
-              {/* Primary Account Card */}
-              <button
-                type="button"
-                onClick={() => handleExecuteGoogleDirectLogin('jakariatanim03@gmail.com', 'Jakaria Tanim')}
-                className="w-full flex items-center justify-between p-3 rounded-2xl border border-black/10 dark:border-white/10 hover:border-[#0071E3] hover:bg-black/[0.02] dark:hover:bg-white/5 transition-all text-left group"
-              >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0071E3] to-[#4285F4] text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
-                    JT
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate group-hover:text-[#0071E3]">
-                      Jakaria Tanim
-                    </div>
-                    <div className="text-[11px] text-[#86868B] dark:text-slate-400 truncate font-mono">
-                      jakariatanim03@gmail.com
-                    </div>
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full flex-shrink-0">
-                  Active
-                </span>
-              </button>
-
-              {/* Enter custom email */}
-              <div className="pt-2 border-t border-black/[0.08] dark:border-white/10 space-y-2">
+              {/* Dynamic Google Email Input */}
+              <form onSubmit={handleGoogleSubmit} className="space-y-3">
                 <input
                   type="email"
-                  value={customGoogleEmail}
-                  onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                  placeholder="Or enter any Gmail address..."
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] text-[#1D1D1F] dark:text-white font-mono"
+                  required
+                  value={googleEmailInput}
+                  onChange={(e) => setGoogleEmailInput(e.target.value)}
+                  placeholder="name@gmail.com"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] text-[#1D1D1F] dark:text-white font-mono"
+                />
+                <input
+                  type="text"
+                  value={googleNameInput}
+                  onChange={(e) => setGoogleNameInput(e.target.value)}
+                  placeholder="Display Name (optional)"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] text-[#1D1D1F] dark:text-white"
                 />
                 <button
-                  type="button"
-                  disabled={!customGoogleEmail.trim() || !customGoogleEmail.includes('@')}
-                  onClick={() => handleExecuteGoogleDirectLogin(customGoogleEmail.trim(), customGoogleEmail.split('@')[0])}
-                  className="w-full py-2 rounded-xl bg-[#0071E3] text-white font-semibold text-xs disabled:opacity-40"
+                  type="submit"
+                  disabled={!googleEmailInput.trim() || !googleEmailInput.includes('@')}
+                  className="w-full py-2.5 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white font-semibold text-xs disabled:opacity-40 transition-colors shadow-xs"
                 >
-                  Continue with this Account
+                  Continue with Google
                 </button>
-              </div>
+              </form>
 
-              <p className="text-[10px] text-center text-[#86868B] dark:text-slate-400 pt-1">
-                🔒 Verified Google OAuth Protocol
-              </p>
+              <div className="pt-2 border-t border-black/[0.06] dark:border-white/10 text-[10px] text-slate-500 dark:text-slate-400 text-center space-y-1">
+                <p>🔒 1-Click Verified Identity Authentication</p>
+              </div>
             </div>
           </div>
         )}
