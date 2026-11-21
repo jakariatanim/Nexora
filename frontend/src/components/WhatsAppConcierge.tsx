@@ -13,8 +13,7 @@ import {
   UserCheck, 
   ChevronRight,
   RotateCcw,
-  ExternalLink,
-  Globe
+  ExternalLink
 } from 'lucide-react';
 
 interface ChatMessage {
@@ -27,15 +26,17 @@ interface ChatMessage {
 
 type Lang = 'en' | 'bn';
 
+const BRAND_GREETING = 'Hello, Welcome to the Next Era of Flagship Hardware.';
+
 const CONTENT = {
   en: {
     title: 'NEXORA Client Support',
     subtitle: 'Dedicated Hardware Specialist • Online',
-    welcome: 'Assalamu Alaikum, Welcome to NEXORA.\n\nHow can we assist your flagship hardware journey today? Select a common topic below or message us directly:',
+    welcome: `${BRAND_GREETING}\n\nHow can we assist your journey today? Select an inquiry below or message us directly:`,
     placeholder: 'Type your message or inquiry...',
     quickTitle: 'Common Inquiries',
     typing: 'Concierge is replying...',
-    openNewTab: 'Open Live Support in New Tab',
+    openNewTab: 'Open Standalone Support in New Tab',
     reset: 'Reset Conversation',
     close: 'Close',
     supportBtn: 'Support',
@@ -43,7 +44,7 @@ const CONTENT = {
       {
         id: 'delivery',
         icon: Truck,
-        label: '🚚 Delivery Timeline & Shipping Fees',
+        label: '🚚 Delivery & Fees',
         question: 'What are the delivery timelines and shipping charges across Bangladesh?',
         reply: 'We offer express, insured hardware dispatch across Bangladesh:\n\n• Dhaka Metro: ৳70 (Guaranteed within 24 Hours)\n• Greater Dhaka: ৳100 (24 to 36 Hours)\n• Nationwide: ৳140 (Within 24 to 48 Hours)\n\nCash on Delivery (COD) is available nationwide—you can inspect your package upon delivery before completing payment.',
         links: [{ label: 'Browse Hardware Catalog', href: '/explore' }]
@@ -51,7 +52,7 @@ const CONTENT = {
       {
         id: 'track',
         icon: Package,
-        label: '📦 How to Track an Order',
+        label: '📦 Track Order',
         question: 'How do I track my active order in real time?',
         reply: 'Upon dispatch, you receive an automated SMS with your 5-digit Order ID (e.g. NX-94821). Simply visit our Live Satellite Order Tracker and enter your mobile number or Order ID to monitor packaging, dispatch, transit, and delivery progress.',
         links: [{ label: 'Open Live Order Tracker', href: '/track-order' }]
@@ -59,7 +60,7 @@ const CONTENT = {
       {
         id: 'warranty',
         icon: ShieldCheck,
-        label: '🛡️ 1-Year Warranty & 7-Day Replacement',
+        label: '🛡️ 1-Yr Warranty & RMA',
         question: 'What is the official warranty and RMA replacement coverage?',
         reply: 'Every flagship device sold by NEXORA carries:\n\n• 1-Year Official Hardware Warranty coverage\n• 7-Day Instant Replacement Guarantee (RMA)\n\nIf you encounter any manufacturing fault, submit an immediate claim via our online RMA Portal for instant inspection and replacement.',
         links: [{ label: 'Submit Warranty Claim', href: '/warranty-claim' }]
@@ -67,7 +68,7 @@ const CONTENT = {
       {
         id: 'payment',
         icon: CreditCard,
-        label: '💳 Payment Methods & Cash on Delivery',
+        label: '💳 Payment & COD',
         question: 'Which payment methods do you accept? Is COD available?',
         reply: 'We accept 100% Cash on Delivery (COD), bKash, Nagad, Visa, Mastercard, and Direct Bank Wire Transfer with zero hidden fees. 0% interest EMI options up to 36 months are also supported on major credit cards.',
         links: [{ label: 'Proceed to Secure Checkout', href: '/checkout' }]
@@ -75,7 +76,7 @@ const CONTENT = {
       {
         id: 'genuine',
         icon: Smartphone,
-        label: '📱 100% Factory-Sealed Genuine Guarantee',
+        label: '📱 100% Genuine',
         question: 'Are all devices brand new, factory sealed, and official?',
         reply: 'All devices curated by NEXORA are 100% original, brand new, and factory-sealed with intact manufacturer seals. Official IMEI and serial numbers from Apple, Samsung, Google, and Sony can be verified on official manufacturer portals.',
         links: [{ label: 'Explore Flagship Devices', href: '/explore' }]
@@ -83,9 +84,9 @@ const CONTENT = {
       {
         id: 'founder',
         icon: UserCheck,
-        label: '👤 Founder & Executive Concierge',
+        label: '👤 Founder Vision',
         question: 'How can I connect with Founder Jakaria Tanim or Head Office?',
-        reply: 'NEXORA is directed by Founder & Chief Architect Jakaria Tanim. For enterprise procurement, VIP hardware concierge, or bulk inquiries, you can reach out directly via our Founder portal or WhatsApp executive line.',
+        reply: 'NEXORA is directed by Founder & Chief Architect Jakaria Tanim. For enterprise procurement, VIP hardware concierge, or bulk inquiries, you can reach out directly via our Founder portal or executive line.',
         links: [{ label: 'Read Founder Vision', href: '/founder' }]
       }
     ]
@@ -93,11 +94,11 @@ const CONTENT = {
   bn: {
     title: 'নেক্সরা ক্লায়েন্ট সাপোর্ট',
     subtitle: 'ডেডিকেটেড গ্যাজেট স্পেশালিস্ট • অনলাইন',
-    welcome: 'আসসালামু আলাইকুম, নেক্সরাতে আপনাকে স্বাগতম।\n\nআজ আপনাকে কীভাবে সহযোগিতা করতে পারি? নিচের যেকোনো বিষয়ে ক্লিক করুন অথবা আপনার প্রশ্নটি লিখে জানান:',
+    welcome: `${BRAND_GREETING}\n\nআজ আপনাকে কীভাবে সহযোগিতা করতে পারি? নিচের যেকোনো বিষয়ে ক্লিক করুন অথবা আপনার প্রশ্নটি লিখে জানান:`,
     placeholder: 'আপনার প্রশ্ন বা বার্তা লিখুন...',
     quickTitle: 'সাধারণ প্রশ্নসমূহ',
     typing: 'সাপোর্ট প্রতিনিধি লিখছেন...',
-    openNewTab: 'নতুন ট্যাবে সাপোর্ট ওপেন করুন',
+    openNewTab: 'নতুন ট্যাবে সাপোর্ট পেজ ওপেন করুন',
     reset: 'চ্যাট নতুন করে শুরু করুন',
     close: 'বন্ধ করুন',
     supportBtn: 'সাপোর্ট',
@@ -105,7 +106,7 @@ const CONTENT = {
       {
         id: 'delivery',
         icon: Truck,
-        label: '🚚 ডেলিভারি চার্জ ও সময় কত?',
+        label: '🚚 ডেলিভারি ও চার্জ',
         question: 'ডেলিভারি চার্জ এবং পৌঁছাতে কতদিন সময় লাগবে?',
         reply: 'NEXORA-তে আমরা সুপার-ফাস্ট হোম ডেলিভারি দিয়ে থাকি:\n\n• ঢাকা মেট্রো: ৳৭০ (২৪ ঘণ্টার মধ্যে এক্সপ্রেস ডেলিভারি)\n• গ্রেটার ঢাকা: ৳১০০ (২৪-৩৬ ঘণ্টা)\n• সারা বাংলাদেশ: ৳১৪০ (২৪-৪৮ ঘণ্টার মধ্যে নিরাপদ ডেলিভারি)\n\nক্যাশ অন ডেলিভারিতে প্রোডাক্ট হাতে পেয়ে চেক করে মূল্য পরিশোধ করতে পারবেন।',
         links: [{ label: 'ক্যাটালগ দেখুন', href: '/explore' }]
@@ -113,7 +114,7 @@ const CONTENT = {
       {
         id: 'track',
         icon: Package,
-        label: '📦 অর্ডার ট্র্যাক করব কীভাবে?',
+        label: '📦 অর্ডার ট্র্যাক',
         question: 'আমার অর্ডারটি এখন কোথায় আছে কীভাবে জানব?',
         reply: 'অর্ডার করার পর আপনাকে ৫ ডিজিটের একটি ট্র্যাকিং কোড (যেমন: NX-94821) এসএমএস দেওয়া হয়। আমাদের লাইভ ট্র্যাকিং পেজে গিয়ে আপনার ফোন নম্বর বা ট্র্যাকিং কোড দিলেই অর্ডারের বর্তমান অবস্থা লাইভ দেখতে পাবেন।',
         links: [{ label: 'লাইভ অর্ডার ট্র্যাকার', href: '/track-order' }]
@@ -121,7 +122,7 @@ const CONTENT = {
       {
         id: 'warranty',
         icon: ShieldCheck,
-        label: '🛡️ ১ বছরের ওয়্যারেন্টি ও ৭ দিনের রিপ্লেসমেন্ট',
+        label: '🛡️ ১ বছরের ওয়্যারেন্টি',
         question: 'প্রোডাক্টের ওয়ারেন্টি পলিসি এবং নষ্ট হলে কী সুবিধা পাব?',
         reply: 'NEXORA-র প্রতিটি গ্যাজেটে পাবেন:\n\n• ১ বছরের অফিশিয়াল হার্ডওয়্যার ওয়ারেন্টি\n• ৭ দিনের ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি (RMA)\n\nকোনো সমস্যা হলে সরাসরি আমাদের অনলাইন RMA পোর্টালে ক্লেইম সাবমিট করতে পারবেন।',
         links: [{ label: 'ওয়ারেন্টি ক্লেইম পোর্টাল', href: '/warranty-claim' }]
@@ -129,7 +130,7 @@ const CONTENT = {
       {
         id: 'payment',
         icon: CreditCard,
-        label: '💳 ক্যাশ অন ডেলিভারি ও পেমেন্ট নিয়ম',
+        label: '💳 পেমেন্ট ও ক্যাশ অন ডেলিভারি',
         question: 'পেমেন্ট মেথড কী কী আছে? ক্যাশ অন ডেলিভারি হবে?',
         reply: 'হ্যাঁ, ১০০% ক্যাশ অন ডেলিভারি সুবিধা রয়েছে! এছাড়া বিকাশ (bKash), নগদ (Nagad), ভিসা/মাস্টারকার্ড ও ব্যাংক ট্রান্সফারে কোনো অতিরিক্ত ফি ছাড়াই পেমেন্ট করতে পারবেন।',
         links: [{ label: 'চেকআউট পেজ', href: '/checkout' }]
@@ -137,15 +138,15 @@ const CONTENT = {
       {
         id: 'genuine',
         icon: Smartphone,
-        label: '📱 প্রোডাক্ট কি ১০০% আসল ও অফিসিয়াল?',
+        label: '📱 ১০০% আসল গ্যারান্টি',
         question: 'গ্যাজেটগুলো কি আসল ও ইনট্যাক্ট বক্স?',
-        reply: 'NEXORA-র প্রতিটি প্রোডাক্ট ১০০% আসল, আন-অ্যাক্টিভেটেড ও ইনট্যাক্ট ফ্যাক্টরি সিল প্যাকড। বক্সের আইএমইআই (IMEI) ও সিরিয়াল নম্বর ওয়েবসাইটে যাচাই করে নিতে পারবেন।',
+        reply: 'NEXORA-র প্রতিটি প্রোডাক্ট ১০০% আসল, আন-অ্যাক্টিভেটেড ও ইনট্যাক্ট ফ্যাক্টরি সিল প্যাকড। বক্সের আইএমইআই (IMEI) ও সিরিয়াল নম্বর দিয়ে সরাসরি যাচাই করে নিতে পারবেন।',
         links: [{ label: 'প্রোডাক্ট কালেকশন', href: '/explore' }]
       },
       {
         id: 'founder',
         icon: UserCheck,
-        label: '👤 ফাউন্ডার জাকারিয়া তানিমের সাথে যোগাযোগ',
+        label: '👤 ফাউন্ডার তানিম',
         question: 'প্রতিষ্ঠাতা জাকারিয়া তানিম বা হেড অফিসে কীভাবে কথা বলব?',
         reply: 'NEXORA পরিচালিত হচ্ছে ফাউন্ডার ও চিফ আর্কিটেক্ট জাকারিয়া তানিম (Jakaria Tanim)-এর সরাসরি তত্ত্বাবধানে। যেকোনো প্রয়োজনে সরাসরি তার সাথে যোগাযোগ করতে পারেন।',
         links: [{ label: 'ফাউন্ডার পেজ', href: '/founder' }]
@@ -159,11 +160,9 @@ export const WhatsAppConcierge: React.FC = () => {
   const [lang, setLang] = useState<Lang>('en');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showInquiries, setShowInquiries] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
-
-  const phoneNumber = '8801640026177';
-  const defaultWhatsAppMsg = 'Hello NEXORA Concierge, I would like to inquire about your flagship hardware collection.';
 
   const t = CONTENT[lang];
 
@@ -187,8 +186,8 @@ export const WhatsAppConcierge: React.FC = () => {
   }, [messages, isOpen, isTyping]);
 
   const handleOpenInNewTab = () => {
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(defaultWhatsAppMsg)}`;
-    window.open(url, '_blank', 'noopener,noreferrer');
+    // Opens the dedicated support page in a new browser tab
+    window.open('/support', '_blank');
   };
 
   const handleToggleLang = (newLang: Lang) => {
@@ -201,6 +200,7 @@ export const WhatsAppConcierge: React.FC = () => {
         time: 'Just now'
       }
     ]);
+    setShowInquiries(true);
   };
 
   const handleTopicClick = (topic: typeof CONTENT['en']['topics'][0]) => {
@@ -213,6 +213,8 @@ export const WhatsAppConcierge: React.FC = () => {
 
     setMessages(prev => [...prev, userMsg]);
     setIsTyping(true);
+    // Collapse inquiries list so the reply takes full focus and is completely visible!
+    setShowInquiries(false);
 
     setTimeout(() => {
       const conciergeMsg: ChatMessage = {
@@ -242,6 +244,7 @@ export const WhatsAppConcierge: React.FC = () => {
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
     setIsTyping(true);
+    setShowInquiries(false);
 
     setTimeout(() => {
       const q = query.toLowerCase();
@@ -277,14 +280,10 @@ export const WhatsAppConcierge: React.FC = () => {
           ? 'NEXORA is founded and directed by Jakaria Tanim. You can review the founder architectural vision or connect directly.'
           : 'NEXORA পরিচালিত হচ্ছে ফাউন্ডার জাকারিয়া তানিমের সরাসরি তত্ত্বাবধানে।';
         replyLinks = [{ label: lang === 'en' ? 'Founder Vision' : 'ফাউন্ডার পেজ', href: '/founder' }];
-      } else if (q.includes('emi') || q.includes('installment') || q.includes('কিস্তি')) {
-        replyText = lang === 'en'
-          ? 'We support 0% interest EMI options up to 36 months through major bank credit cards.'
-          : 'দেশের শীর্ষস্থানীয় ব্যাংকের ক্রেডিট কার্ডে ০% সুদে ৩৬ মাস পর্যন্ত সহজ কিস্তি সুবিধা রয়েছে।';
       } else {
         replyText = lang === 'en'
-          ? 'Thank you for your message! Our specialist team is reviewing your query. You can also chat directly on our executive WhatsApp hotline for instant personalized assistance.'
-          : 'আপনার বার্তার জন্য ধন্যবাদ! সরাসরি আমাদের প্রতিনিধির সাথে কথা বলতে নিচের লিংকে ক্লিক করে হোয়াটসঅ্যাপে যোগাযোগ করতে পারেন।';
+          ? 'Thank you for your message! Our specialist concierge team is at your disposal. You can also chat directly on our executive WhatsApp hotline (+880 1640-026177) for instant assistance.'
+          : 'আপনার বার্তার জন্য ধন্যবাদ! সরাসরি আমাদের প্রতিনিধির সাথে কথা বলতে হোয়াটসঅ্যাপে (+880 1640-026177) যোগাযোগ করতে পারেন।';
       }
 
       const conciergeMsg: ChatMessage = {
@@ -309,6 +308,7 @@ export const WhatsAppConcierge: React.FC = () => {
         time: 'Just now'
       }
     ]);
+    setShowInquiries(true);
   };
 
   return (
@@ -321,7 +321,7 @@ export const WhatsAppConcierge: React.FC = () => {
           data-lenis-prevent="true"
           data-lenis-prevent-wheel="true"
           onWheel={(e) => e.stopPropagation()}
-          className="mb-3 w-[92vw] sm:w-[400px] max-h-[600px] h-[540px] rounded-3xl bg-white dark:bg-[#070B18] border border-black/10 dark:border-white/20 shadow-[0_20px_60px_rgba(11,19,43,0.35)] overflow-hidden flex flex-col animate-fade-in text-left overscroll-contain"
+          className="mb-3 w-[92vw] sm:w-[390px] max-h-[600px] h-[520px] rounded-3xl bg-white dark:bg-[#070B18] border border-black/10 dark:border-white/20 shadow-[0_20px_60px_rgba(11,19,43,0.35)] overflow-hidden flex flex-col animate-fade-in text-left overscroll-contain"
         >
           {/* Header - Styled to match the Title Bar (#0B132B) */}
           <div className="px-5 py-3.5 bg-[#0B132B] dark:bg-[#070B18] text-white flex items-center justify-between border-b border-white/15">
@@ -362,7 +362,7 @@ export const WhatsAppConcierge: React.FC = () => {
                 </button>
               </div>
 
-              {/* Open in New Tab Button */}
+              {/* Open Standalone Page in New Tab Button */}
               <button
                 type="button"
                 onClick={handleOpenInNewTab}
@@ -448,24 +448,35 @@ export const WhatsAppConcierge: React.FC = () => {
               </div>
             )}
 
-            {/* Quick Topic Chips */}
-            <div className="pt-2 space-y-2">
-              <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
-                {t.quickTitle}:
+            {/* Compact Quick Topic Chips (2 to 3 per line) with Toggle */}
+            <div className="pt-2">
+              <div className="flex items-center justify-between pb-1.5 px-0.5">
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {t.quickTitle}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowInquiries(!showInquiries)}
+                  className="text-[10px] font-semibold text-[#0071E3] hover:underline"
+                >
+                  {showInquiries ? (lang === 'en' ? 'Hide ▲' : 'লুকান ▲') : (lang === 'en' ? 'Show (6) ▼' : 'দেখুন (৬) ▼')}
+                </button>
               </div>
-              <div className="flex flex-col gap-1.5">
-                {t.topics.map((topic) => (
-                  <button
-                    key={topic.id}
-                    type="button"
-                    onClick={() => handleTopicClick(topic)}
-                    className="text-left text-[11px] font-medium p-2.5 rounded-xl bg-white dark:bg-[#151D30] border border-black/5 dark:border-white/10 hover:border-[#0071E3] dark:hover:border-[#38BDF8] text-[#1D1D1F] dark:text-slate-200 hover:text-[#0071E3] dark:hover:text-[#38BDF8] transition-all shadow-xs active:scale-[0.98] flex items-center justify-between group"
-                  >
-                    <span>{topic.label}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#0071E3] transition-colors" />
-                  </button>
-                ))}
-              </div>
+
+              {showInquiries && (
+                <div className="flex flex-wrap gap-1.5 animate-fadeIn">
+                  {t.topics.map((topic) => (
+                    <button
+                      key={topic.id}
+                      type="button"
+                      onClick={() => handleTopicClick(topic)}
+                      className="text-left text-[11px] font-medium px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#151D30] border border-black/10 dark:border-white/10 hover:border-[#0071E3] dark:hover:border-[#38BDF8] text-[#1D1D1F] dark:text-slate-200 hover:text-[#0071E3] dark:hover:text-[#38BDF8] transition-all shadow-xs active:scale-95 flex items-center gap-1"
+                    >
+                      <span>{topic.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div ref={messagesEndRef} />
