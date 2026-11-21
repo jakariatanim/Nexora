@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { TurnstileWidget } from './TurnstileWidget';
-import { Auth0DemoModal } from './Auth0DemoModal';
 import { useCart } from '../lib/cartContext';
 import { 
   loginCustomer, 
@@ -45,7 +44,6 @@ export const AuthModal: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState('');
-  const [isAuth0DemoOpen, setIsAuth0DemoOpen] = useState(false);
 
   // Customer Hub State
   const [activeTab, setActiveTab] = useState<'orders' | 'profile'>('orders');
@@ -455,7 +453,7 @@ export const AuthModal: React.FC = () => {
               {/* Google Button */}
               <button
                 type="button"
-                onClick={() => setIsAuth0DemoOpen(true)}
+                onClick={() => setSocialModal('google')}
                 disabled={loading}
                 className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-white/5 hover:bg-black/[0.02] dark:hover:bg-white/10 text-xs font-semibold text-[#1D1D1F] dark:text-white transition-all shadow-sm active:scale-95"
               >
@@ -465,13 +463,13 @@ export const AuthModal: React.FC = () => {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span>Google (Auth0)</span>
+                <span>Google</span>
               </button>
 
               {/* Apple Button */}
               <button
                 type="button"
-                onClick={() => setIsAuth0DemoOpen(true)}
+                onClick={() => setSocialModal('apple')}
                 disabled={loading}
                 className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-white/5 hover:bg-black/[0.02] dark:hover:bg-white/10 text-xs font-semibold text-[#1D1D1F] dark:text-white transition-all shadow-sm active:scale-95"
               >
@@ -481,19 +479,6 @@ export const AuthModal: React.FC = () => {
                 <span>Apple ID</span>
               </button>
             </div>
-
-            {/* Auth0 Banner Pill */}
-            <button
-              type="button"
-              onClick={() => setIsAuth0DemoOpen(true)}
-              className="w-full py-1.5 px-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/40 text-[11px] font-semibold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center justify-between"
-            >
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-                <span>Auth0 Social Login & SSO Integration</span>
-              </div>
-              <span className="underline font-bold">ডেমো ও সুবিধাসমূহ &rarr;</span>
-            </button>
 
             {/* Divider */}
             <div className="relative flex items-center justify-center">
@@ -733,12 +718,6 @@ export const AuthModal: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Auth0 Demo & Interactive Benefits Showcase */}
-        <Auth0DemoModal 
-          isOpen={isAuth0DemoOpen} 
-          onClose={() => setIsAuth0DemoOpen(false)} 
-        />
       </div>
     </div>
   );
