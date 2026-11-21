@@ -6,7 +6,97 @@ export interface ConciergeReply {
 export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): ConciergeReply {
   const q = rawQuery.toLowerCase().trim();
 
-  // 1. Buying / Order Placement Intent ("buy", "order", "kinbo", "kivabe", etc.)
+  // 1. Identity & Conversational ("do you know me", "who are you", "who am i", "তুমি কে", "আমাকে চেনো")
+  if (
+    q.includes('know me') || 
+    q.includes('who are you') || 
+    q.includes('who am i') || 
+    q.includes('your name') || 
+    q.includes('what is your name') || 
+    q.includes('whom am i talking') || 
+    q.includes('তুমি কে') || 
+    q.includes('আমাকে চেনো') || 
+    q.includes('আমার নাম কি') || 
+    q.includes('তোমার নাম কি') || 
+    q.includes('কে তুমি')
+  ) {
+    if (lang === 'en') {
+      return {
+        text: 'I am the NEXORA AI Concierge—your dedicated flagship hardware specialist! 🤖✨\n\nWhile I respect your privacy and don’t track personal identity in public chat, once you Sign In to your NEXORA account, I can immediately pull up your active orders, Elite Membership status, and warranty records!',
+        links: [
+          { label: 'Explore Showroom', href: '/explore' },
+          { label: 'Track Your Order', href: '/track-order' }
+        ]
+      };
+    } else {
+      return {
+        text: 'আমি NEXORA এআই ভার্চুয়াল কনসিয়ার্জ—আপনার পার্সোনাল ফ্ল্যাগশিপ হার্ডওয়্যার অ্যাসিস্ট্যান্ট! 🤖✨\n\nসাধারণ চ্যাটে আপনার ব্যক্তিগত তথ্যের গোপনীয়তা সম্পূর্ণ সুরক্ষিত থাকে। তবে আপনি NEXORA আইডিতে সাইন-ইন করলে আপনার সকল অ্যাক্টিভ অর্ডার, মেম্বারশিপ এবং ওয়্যারেন্টি হিস্ট্রি দেখে আমি আপনাকে সরাসরি সাহায্য করতে পারব!',
+        links: [
+          { label: 'ক্যাটালগ ঘুরে দেখুন', href: '/explore' },
+          { label: 'অর্ডার ট্র্যাকিং পেজ', href: '/track-order' }
+        ]
+      };
+    }
+  }
+
+  // 2. Watches / Smartwatches ("watch", "smartwatch", "apple watch", "can you sell watch", "ঘড়ি")
+  if (
+    q.includes('watch') || 
+    q.includes('smartwatch') || 
+    q.includes('ঘড়ি') || 
+    q.includes('স্মার্টওয়াচ')
+  ) {
+    if (lang === 'en') {
+      return {
+        text: 'Yes! NEXORA sells 100% authentic, brand-new smartwatches! ⌚\n\nOur flagship collection includes:\n• Apple Watch Series 10 & Ultra 2 (Cellular & GPS)\n• Samsung Galaxy Watch Ultra & Watch7\n• Premium fitness wearables and official bands\n\nAll units are factory-sealed with official 1-Year Warranty and intact manufacturer packaging.',
+        links: [
+          { label: 'Browse Smartwatches & Wearables', href: '/explore' }
+        ]
+      };
+    } else {
+      return {
+        text: 'হ্যাঁ, অবশ্যই! NEXORA-তে ১০০% অথেনটিক এবং ইনট্যাক্ট সিল করা প্রিমিয়াম স্মার্টওয়াচ পাওয়া যায়! ⌚\n\nআমাদের কালেকশনে রয়েছে:\n• Apple Watch Series 10 ও Apple Watch Ultra 2\n• Samsung Galaxy Watch Ultra ও Watch7\n• প্রিমিয়াম স্ট্র্যাপ ও ওয়্যারলেস চার্জার\n\nসবগুলো প্রোডাক্ট ১ বছরের অফিশিয়াল ওয়্যারেন্টি সহ ইনট্যাক্ট বক্সে পাবেন।',
+        links: [
+          { label: 'স্মার্টওয়াচ ক্যাটালগ দেখুন', href: '/explore' }
+        ]
+      };
+    }
+  }
+
+  // 3. Customer Selling / Exchange / Trade-In / Swap ("can i sell", "how can i sell", "sell my", "exchange", "পুরাতন বিক্রি")
+  if (
+    q.includes('can i sell') || 
+    q.includes('how can i sell') || 
+    q.includes('sell my') || 
+    q.includes('sell phone') || 
+    q.includes('exchange') || 
+    q.includes('swap') || 
+    q.includes('trade in') || 
+    q.includes('বিক্রি করতে পারব') || 
+    q.includes('পুরাতন ফোন') || 
+    q.includes('এক্সচেঞ্জ') || 
+    q.includes('আমার ফোন বিক্রি')
+  ) {
+    if (lang === 'en') {
+      return {
+        text: 'NEXORA specializes primarily in 100% brand-new, factory-sealed flagship hardware. 📱✨\n\nFor official Exchange & Certified Trade-In inquiries on premium iPhones and Galaxy flagships, you can speak directly with our procurement team on WhatsApp (+880 1640-026177) for live device valuation and swap procedures.',
+        links: [
+          { label: 'Chat on WhatsApp with Specialist', href: 'https://wa.me/8801640026177' },
+          { label: 'Explore New Flagships', href: '/explore' }
+        ]
+      };
+    } else {
+      return {
+        text: 'NEXORA মূলত ১০০% ব্র্যান্ড নিউ ও ইনট্যাক্ট সিল প্যাকড ফ্ল্যাগশিপ বিক্রি করে থাকে। 📱✨\n\nতবে প্রিমিয়াম আইফোন বা স্যামসাং ফ্ল্যাগশিপের অফিশিয়াল এক্সচেঞ্জ বা ট্রেড-ইন ভ্যালুয়েশনের জন্য সরাসরি আমাদের এক্সিকিউটিভ ডেস্কে হোয়াটসঅ্যাপে (+880 1640-026177) যোগাযোগ করতে পারেন। আমাদের টিম আপনার ডিভাইসের মান যাচাই করে অফার দেবে।',
+        links: [
+          { label: 'হোয়াটসঅ্যাপে যোগাযোগ করুন', href: 'https://wa.me/8801640026177' },
+          { label: 'নতুন ডিভাইস দেখুন', href: '/explore' }
+        ]
+      };
+    }
+  }
+
+  // 4. Buying / Ordering Process ("buy", "order", "kinbo", "kivabe", "purchase")
   if (
     q.includes('buy') || 
     q.includes('purchase') || 
@@ -24,7 +114,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
   ) {
     if (lang === 'en') {
       return {
-        text: 'Buying flagship hardware on NEXORA is quick and 100% secure:\n\n1. Browse our catalog and select your desired device.\n2. Click "Add to Cart" or "Buy Now".\n3. In checkout, enter your shipping details.\n4. Choose Cash on Delivery (COD) or bKash / Card payment.\n\nYour order is dispatched via express insured courier within 24–48 hours nationwide!',
+        text: 'Buying flagship hardware on NEXORA is quick and 100% secure:\n\n1. Browse our catalog and select your desired device.\n2. Click "Add to Cart" or "Buy Now".\n3. In checkout, enter your shipping details.\n4. Choose Cash on Delivery (COD) or bKash / Card payment.\n\nYour order is dispatched via express insured courier within 24–48 hours nationwide! You can inspect the package upon arrival before payment.',
         links: [
           { label: 'Browse Hardware Catalog', href: '/explore' },
           { label: 'Go to Secure Checkout', href: '/checkout' }
@@ -41,7 +131,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 2. Apple / iPhone Intent
+  // 5. Apple / iPhone Intent
   if (
     q.includes('iphone') || 
     q.includes('apple') || 
@@ -71,7 +161,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 3. Samsung Galaxy Intent
+  // 6. Samsung Galaxy Intent
   if (
     q.includes('samsung') || 
     q.includes('s24') || 
@@ -98,12 +188,13 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 4. Sony / Audio / Headphones Intent
+  // 7. Sony / Audio / Headphones Intent
   if (
     q.includes('sony') || 
     q.includes('wh-1000') || 
     q.includes('headphone') || 
     q.includes('earphone') || 
+    q.includes('earbuds') || 
     q.includes('audio') || 
     q.includes('sound') || 
     q.includes('হেডফোন') || 
@@ -127,7 +218,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 5. Google Pixel Intent
+  // 8. Google Pixel Intent
   if (q.includes('pixel') || q.includes('পিক্সেল')) {
     if (lang === 'en') {
       return {
@@ -146,7 +237,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 6. Price / Cost / EMI / Offers Intent
+  // 9. Price / Cost / EMI / Offers Intent
   if (
     q.includes('price') || 
     q.includes('cost') || 
@@ -186,7 +277,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 7. Delivery / Shipping Timeline & Charges Intent
+  // 10. Delivery / Shipping Timeline & Charges Intent
   if (
     q.includes('deliver') || 
     q.includes('shipping') || 
@@ -217,10 +308,9 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 8. Order Tracking Intent
+  // 11. Order Tracking Intent
   if (
     q.includes('track') || 
-    q.includes('order') || 
     q.includes('status') || 
     q.includes('koi') || 
     q.includes('ট্র্যাক') || 
@@ -244,7 +334,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 9. Warranty / RMA / Replacement Intent
+  // 12. Warranty / RMA / Replacement Intent
   if (
     q.includes('warrant') || 
     q.includes('guarantee') || 
@@ -268,7 +358,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
       };
     } else {
       return {
-        text: 'NEXORA-র প্রতিটি গ্যাজেটে রয়েছে পূর্ণ নিরাপত্তা:\n\n• ১ বছরের অফিশিয়াল হার্ডওয়্যার ওয়ারেন্টি\n• ৭ দিনের ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি (RMA)\n\nকোনো ত্রুটি দেখা দিলে সরাসরি আমাদের অনলাইন ওয়্যারেন্টি পোর্টালে ক্লেইম সাবমিট করতে পারবেন।',
+        text: 'NEXORA-র প্রতিটি গ্যাজেটে রয়েছে পূর্ণ নিরাপত্তা:\n\n• ১ বছরের অফিশিয়াল হার্ডওয়্যার ওয়্যারেন্টি\n• ৭ দিনের ইনস্ট্যান্ট রিপ্লেসমেন্ট গ্যারান্টি (RMA)\n\nকোনো ত্রুটি দেখা দিলে সরাসরি আমাদের অনলাইন ওয়্যারেন্টি পোর্টালে ক্লেইম সাবমিট করতে পারবেন।',
         links: [
           { label: 'ওয়ারেন্টি ক্লেইম পোর্টাল', href: '/warranty-claim' }
         ]
@@ -276,7 +366,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 10. Payment / COD / bKash / Cards Intent
+  // 13. Payment / COD / bKash / Cards Intent
   if (
     q.includes('pay') || 
     q.includes('cod') || 
@@ -306,7 +396,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 11. Authenticity / Genuine / Seal Pack Intent
+  // 14. Authenticity / Genuine / Seal Pack Intent
   if (
     q.includes('authentic') || 
     q.includes('genuine') || 
@@ -336,7 +426,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 12. Location / Showroom / Office Intent
+  // 15. Location / Showroom / Office Intent
   if (
     q.includes('location') || 
     q.includes('address') || 
@@ -369,7 +459,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 13. Founder / Jakaria Tanim Intent
+  // 16. Founder / Jakaria Tanim Intent
   if (
     q.includes('tanim') || 
     q.includes('jakaria') || 
@@ -398,7 +488,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 14. Contact / WhatsApp / Phone / Human specialist Intent
+  // 17. Contact / WhatsApp / Phone / Human specialist Intent
   if (
     q.includes('contact') || 
     q.includes('call') || 
@@ -433,7 +523,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 15. Greetings / Politeness
+  // 18. Greetings / Politeness
   if (
     q.includes('hi') || 
     q.includes('hello') || 
@@ -448,7 +538,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
   ) {
     if (lang === 'en') {
       return {
-        text: 'Hello, Welcome to the Next Era of Flagship Hardware!\n\nI am your NEXORA AI Concierge. How can I assist your flagship hardware journey today? Ask me about iPhones, Galaxy flagships, delivery timelines, order tracking, or how to place an order.',
+        text: 'Hello, Welcome to the Next Era of Flagship Hardware!\n\nI am your NEXORA AI Concierge. How can I assist your flagship hardware journey today? Ask me about iPhones, Galaxy flagships, smartwatches, delivery timelines, order tracking, or how to place an order.',
         links: [
           { label: 'Browse Hardware Catalog', href: '/explore' },
           { label: 'Track Active Order', href: '/track-order' }
@@ -456,7 +546,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
       };
     } else {
       return {
-        text: 'Hello, Welcome to the Next Era of Flagship Hardware.\n\nআসসালামু আলাইকুম! আমি NEXORA এআই ভার্চুয়াল কনসিয়ার্জ। আইফোন, স্যামসাং গ্যালাক্সি, দাম, ডেলিভারি চার্জ, অর্ডার করার নিয়ম কিংবা ওয়ারেন্টি নিয়ে যেকোনো প্রশ্ন করুন—আমি সাথে সাথে উত্তর দিচ্ছি!',
+        text: 'Hello, Welcome to the Next Era of Flagship Hardware.\n\nআসসালামু আলাইকুম! আমি NEXORA এআই ভার্চুয়াল কনসিয়ার্জ। আইফোন, স্যামসাং গ্যালাক্সি, স্মার্টওয়াচ, দাম, ডেলিভারি চার্জ, অর্ডার করার নিয়ম কিংবা ওয়্যারেন্টি নিয়ে যেকোনো প্রশ্ন করুন—আমি সাথে সাথে উত্তর দিচ্ছি!',
         links: [
           { label: 'ক্যাটালগ ঘুরে দেখুন', href: '/explore' },
           { label: 'অর্ডার ট্র্যাক করুন', href: '/track-order' }
@@ -465,10 +555,10 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     }
   }
 
-  // 16. Fallback response with helpful actionable guidance
+  // 19. Fallback response with helpful actionable guidance
   if (lang === 'en') {
     return {
-      text: `Thank you for contacting NEXORA Client Support. We are at your service for device consultations, specifications, and order assistance. You can browse our flagship catalog, track an active parcel, or connect directly on our WhatsApp hotline (+880 1640-026177).`,
+      text: `NEXORA Concierge is at your service! We offer 100% factory-sealed smartphones, smartwatches, audio gear, and laptops with 1-Year official warranty and nationwide Cash on Delivery. How can we help you today?`,
       links: [
         { label: 'Explore Hardware Catalog', href: '/explore' },
         { label: 'Live Order Tracker', href: '/track-order' }
@@ -476,7 +566,7 @@ export function getConciergeAIResponse(rawQuery: string, lang: 'en' | 'bn'): Con
     };
   } else {
     return {
-      text: `NEXORA ক্লায়েন্ট সাপোর্টে যোগাযোগ করার জন্য ধন্যবাদ! গ্যাজেট সম্পর্কিত তথ্য, স্পেসিফিকেশন কিংবা অর্ডার সংক্রান্ত যেকোনো প্রয়োজনে আমরা প্রস্তুত আছি। আপনি ক্যাটালগ দেখতে পারেন অথবা সরাসরি আমাদের হটলাইন হোয়াটসঅ্যাপে (+880 1640-026177) যোগাযোগ করতে পারেন।`,
+      text: `NEXORA কনসিয়ার্জে স্বাগতম! আমাদের এখানে ১০০% অরিজিনাল স্মার্টফোন, স্মার্টওয়াচ, হেডফোন এবং ল্যাপটপ পাবেন ১ বছরের অফিশিয়াল ওয়্যারেন্টি ও ক্যাশ অন ডেলিভারি সহ। আজ আপনাকে কীভাবে সহায়তা করতে পারি?`,
       links: [
         { label: 'ক্যাটালগ ঘুরে দেখুন', href: '/explore' },
         { label: 'লাইভ অর্ডার ট্র্যাকার', href: '/track-order' }
