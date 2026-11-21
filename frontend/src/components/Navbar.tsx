@@ -134,13 +134,7 @@ export const Navbar: React.FC = () => {
             </form>
           ) : (
             /* Navigation Links in Pure White (English) */
-            <div className="hidden md:flex items-center gap-7 lg:gap-9 text-sm font-medium tracking-tight text-white">
-              <Link
-                href="/"
-                className="text-white/90 hover:text-[#38BDF8] transition-colors"
-              >
-                Store
-              </Link>
+            <div className="hidden md:flex items-center gap-5 lg:gap-7 text-xs lg:text-sm font-medium tracking-tight text-white">
               <Link
                 href="/explore"
                 className="text-white/90 hover:text-[#38BDF8] transition-colors"
@@ -158,6 +152,18 @@ export const Navbar: React.FC = () => {
                 className="text-white/90 hover:text-[#38BDF8] transition-colors"
               >
                 Track Order
+              </Link>
+              <Link
+                href="/terms"
+                className="text-white/80 hover:text-[#38BDF8] transition-colors"
+              >
+                Terms & Conditions
+              </Link>
+              <Link
+                href="/privacy"
+                className="text-white/80 hover:text-[#38BDF8] transition-colors"
+              >
+                Privacy Policy
               </Link>
             </div>
           )}

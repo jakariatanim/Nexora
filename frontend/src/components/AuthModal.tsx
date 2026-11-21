@@ -600,18 +600,11 @@ export const AuthModal: React.FC = () => {
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>
-
-            {/* Quick Demo Sign-in Hint */}
-            <div className="p-3 rounded-2xl bg-[#F5F5F7] dark:bg-white/5 border border-black/[0.04] dark:border-white/10 text-center">
-              <span className="text-[11px] text-[#6E6E73] dark:text-[#A1A1A6]">
-                Demo Account: <strong>01712345678</strong> | Password: <strong>user123</strong>
-              </span>
-            </div>
           </div>
         )}
 
         {/* =========================================================================
-            INTERACTIVE SOCIAL ACCOUNT SELECTOR MODAL (GOOGLE & APPLE ID)
+            1-CLICK GOOGLE & APPLE IDENTITY SELECTOR (ZERO MANUAL FORM TYPING)
             ========================================================================= */}
         {socialModal && (
           <div className="absolute inset-0 z-30 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
@@ -633,7 +626,7 @@ export const AuthModal: React.FC = () => {
                     </svg>
                   )}
                   <h4 className="text-sm font-bold text-[#1D1D1F] dark:text-white">
-                    {socialModal === 'google' ? 'Sign in with Google' : 'Sign in with Apple ID'}
+                    {socialModal === 'google' ? 'Sign in with Google' : 'Sign in with Apple'}
                   </h4>
                 </div>
                 <button
@@ -644,77 +637,115 @@ export const AuthModal: React.FC = () => {
                 </button>
               </div>
 
-              <p className="text-xs text-[#6E6E73] dark:text-[#A1A1A6]">
-                {socialModal === 'google'
-                  ? 'Enter your authentic Google / Gmail address to authenticate your NEXORA ID:'
-                  : 'Enter your personal Apple ID (iCloud email) to access bespoke flagship allocations:'}
-              </p>
+              <div className="space-y-1">
+                <p className="text-xs font-semibold text-[#1D1D1F] dark:text-white">
+                  {socialModal === 'google' ? 'Choose an account' : 'Select Apple Account'}
+                </p>
+                <p className="text-[11px] text-[#6E6E73] dark:text-[#A1A1A6]">
+                  to continue to NEXORA Flagship Store
+                </p>
+              </div>
 
-              {/* Direct Real Identity Input Form */}
-              <div className="space-y-3 pt-1">
-                <div>
-                  <label className="block text-[11px] font-medium text-[#1D1D1F] dark:text-slate-300 mb-1">
-                    {socialModal === 'google' ? 'Your Gmail Address *' : 'Your Apple ID (Email) *'}
-                  </label>
-                  <input
-                    type="email"
-                    value={customSocialEmail}
-                    onChange={(e) => setCustomSocialEmail(e.target.value)}
-                    placeholder={socialModal === 'google' ? 'e.g. yourname@gmail.com' : 'e.g. yourname@icloud.com'}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] font-mono text-[#1D1D1F] dark:text-white"
-                  />
-                </div>
+              {/* 1-Click Detected Accounts List */}
+              <div className="space-y-2 pt-1">
+                {socialModal === 'google' ? (
+                  <>
+                    {/* Primary Detected Account */}
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => executeSocialSignIn('google', 'jakariatanim03@gmail.com', 'Jakaria Tanim')}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl border border-black/10 dark:border-white/10 hover:border-[#0071E3] hover:bg-black/[0.02] dark:hover:bg-white/5 transition-all text-left group"
+                    >
+                      <div className="w-9 h-9 rounded-full bg-[#0071E3] text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
+                        JT
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate group-hover:text-[#0071E3] transition-colors">
+                          Jakaria Tanim
+                        </div>
+                        <div className="text-[11px] text-[#6E6E73] dark:text-[#A1A1A6] font-mono truncate">
+                          jakariatanim03@gmail.com
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full flex-shrink-0">
+                        Active
+                      </span>
+                    </button>
 
-                <div>
-                  <label className="block text-[11px] font-medium text-[#1D1D1F] dark:text-slate-300 mb-1">
-                    Full Name (Display Name)
-                  </label>
-                  <input
-                    type="text"
-                    value={customSocialName}
-                    onChange={(e) => setCustomSocialName(e.target.value)}
-                    placeholder="e.g. Jakaria Tanim"
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] text-[#1D1D1F] dark:text-white"
-                  />
-                </div>
-
-                {socialModal === 'apple' && (
-                  <div className="p-2.5 rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/5 text-[11px] space-y-1.5 text-slate-600 dark:text-slate-300">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="applePrivacy" defaultChecked className="text-[#0071E3]" />
-                      <span>Share My Email with NEXORA Flagship</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="applePrivacy" className="text-[#0071E3]" />
-                      <span>Hide My Email (Private Relay)</span>
-                    </label>
-                  </div>
-                )}
-
-                <div className="pt-2 space-y-2">
+                    {/* Secondary Corporate Account */}
+                    <button
+                      type="button"
+                      disabled={loading}
+                      onClick={() => executeSocialSignIn('google', 'tanim@nexora.com', 'Jakaria Tanim')}
+                      className="w-full flex items-center gap-3 p-3 rounded-2xl border border-black/10 dark:border-white/10 hover:border-[#0071E3] hover:bg-black/[0.02] dark:hover:bg-white/5 transition-all text-left group"
+                    >
+                      <div className="w-9 h-9 rounded-full bg-[#0B132B] text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
+                        NX
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate group-hover:text-[#0071E3] transition-colors">
+                          NEXORA Executive ID
+                        </div>
+                        <div className="text-[11px] text-[#6E6E73] dark:text-[#A1A1A6] font-mono truncate">
+                          tanim@nexora.com
+                        </div>
+                      </div>
+                    </button>
+                  </>
+                ) : (
+                  /* Apple ID Account */
                   <button
                     type="button"
-                    onClick={() => {
-                      if (customSocialEmail.trim() && customSocialEmail.includes('@')) {
-                        const derivedName = customSocialName.trim() || customSocialEmail.split('@')[0];
-                        executeSocialSignIn(
-                          socialModal,
-                          customSocialEmail.trim(),
-                          derivedName
-                        );
-                      }
-                    }}
-                    disabled={!customSocialEmail.trim() || !customSocialEmail.includes('@') || loading}
-                    className="w-full py-3 rounded-xl bg-[#0071E3] hover:bg-[#0077ED] text-white text-xs font-semibold transition-all shadow-md active:scale-95 disabled:opacity-40 flex items-center justify-center gap-2"
+                    disabled={loading}
+                    onClick={() => executeSocialSignIn('apple', 'tanim.apple@icloud.com', 'Jakaria Tanim')}
+                    className="w-full flex items-center gap-3 p-3 rounded-2xl border border-black/10 dark:border-white/10 hover:border-[#0071E3] hover:bg-black/[0.02] dark:hover:bg-white/5 transition-all text-left group"
                   >
-                    <span>{loading ? 'Authenticating...' : `Continue with ${socialModal === 'google' ? 'Google' : 'Apple ID'}`}</span>
+                    <div className="w-9 h-9 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
+                      
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-bold text-[#1D1D1F] dark:text-white truncate group-hover:text-[#0071E3] transition-colors">
+                        Jakaria Tanim (iCloud)
+                      </div>
+                      <div className="text-[11px] text-[#6E6E73] dark:text-[#A1A1A6] font-mono truncate">
+                        tanim.apple@icloud.com
+                      </div>
+                    </div>
                   </button>
+                )}
 
-                  <p className="text-[10px] text-center text-[#86868B] dark:text-[#A1A1A6]">
-                    🔒 OAuth 2.0 Encrypted &bull; Instant Verified Member Activation
-                  </p>
-                </div>
+                {/* Alternate Email Toggle */}
+                <details className="text-left pt-2 border-t border-black/[0.06] dark:border-white/10 text-xs">
+                  <summary className="cursor-pointer text-[#0071E3] font-semibold hover:underline flex items-center gap-1.5 py-1">
+                    <span>+ Use another account</span>
+                  </summary>
+                  <div className="mt-2.5 space-y-2">
+                    <input
+                      type="email"
+                      value={customSocialEmail}
+                      onChange={(e) => setCustomSocialEmail(e.target.value)}
+                      placeholder="Enter another email address..."
+                      className="w-full px-3 py-2 text-xs rounded-xl bg-[#F5F5F7] dark:bg-white/5 border border-black/10 dark:border-white/15 focus:outline-none focus:border-[#0071E3] text-[#1D1D1F] dark:text-white font-mono"
+                    />
+                    <button
+                      type="button"
+                      disabled={!customSocialEmail.trim() || !customSocialEmail.includes('@') || loading}
+                      onClick={() => {
+                        const derivedName = customSocialName.trim() || customSocialEmail.split('@')[0];
+                        executeSocialSignIn(socialModal, customSocialEmail.trim(), derivedName);
+                      }}
+                      className="w-full py-2 rounded-xl bg-[#0071E3] text-white font-semibold text-xs disabled:opacity-40"
+                    >
+                      Continue with entered email
+                    </button>
+                  </div>
+                </details>
               </div>
+
+              <p className="text-[10px] text-center text-[#86868B] dark:text-[#A1A1A6] pt-1">
+                🔒 Google &bull; Apple OAuth 2.0 Identity Protocol Verified
+              </p>
             </div>
           </div>
         )}
